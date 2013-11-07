@@ -32,4 +32,8 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+
+  def login_required
+    redirect_to auth_path if !@user_google_session
+  end
 end
