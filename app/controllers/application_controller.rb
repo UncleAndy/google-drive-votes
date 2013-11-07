@@ -27,14 +27,9 @@ class ApplicationController < ActionController::Base
       @main_google_session = GoogleDrive.restore_session(session[:main_auth_token]) if session[:main_auth_token].present?
       if !@main_google_session
         google_auth = YAML.load_file("#{Rails.root}/config/google.yml")
-        Rails.logger.info("DBG: google login for #{google_auth.inspect}")
         @main_google_session = GoogleDrive.login(google_auth['login'], google_auth['password']) if google_auth
         session[:main_auth_token] = @main_google_session.auth_token
       end
     end
-    Rails.logger.info("DBG: user google session: #{@user_google_session}")
-    Rails.logger.info("DBG: main google session: #{@main_google_session}")
-
-    redirect_to auth_path if !@user_google_session
   end
 end
