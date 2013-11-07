@@ -10,6 +10,13 @@
 # http://github.com/RailsApps/rails-composer/issues
 #----------------------------------------------------------------------------
 
+# kate
+*~
+*.sw?
+
+# google app auth
+/config/google.yml
+
 # bundler state
 /.bundle
 /vendor/bundle/
