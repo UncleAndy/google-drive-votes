@@ -36,3 +36,30 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'debugger'
+
+gem 'bootstrap-sass', '>= 3.0.0.0'
+gem 'figaro'
+gem 'haml-rails'
+gem 'pg'
+gem 'simple_form'
+
+group :development do
+  gem 'html2haml'
+  gem 'rails_layout'
+end
+
+group :development, :test do
+  gem 'factory_girl_rails'
+  gem 'rspec-rails'
+end
+
+group :production do
+  gem 'unicorn'
+end
+
+group :test do
+  gem 'capybara'
+  gem 'database_cleaner', '1.0.1'
+  gem 'email_spec'
+end
+
