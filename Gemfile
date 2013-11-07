@@ -8,10 +8,11 @@ group :assets do
 end
 gem 'jquery-rails'
 gem 'bootstrap-sass', '>= 3.0.0.0'
-gem 'figaro'
 gem 'haml-rails'
 gem 'pg'
 gem 'simple_form'
+gem 'rails_config'
+gem 'google_drive'
 group :development do
   gem 'html2haml'
   gem 'rails_layout'
