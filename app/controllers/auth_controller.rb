@@ -3,17 +3,20 @@ class AuthController < ApplicationController
   before_filter :create_oauth2_client
   
   def show
+    session[:site_return_url] = request.env["HTTP_REFERER"]
     @auth_url = @client.auth_code.authorize_url(
       :redirect_uri => Settings.oauth2.redirect_url,
-      :scope => "https://spreadsheets.google.com/feeds/")
+      :scope =>
+        "https://docs.google.com/feeds/ " +
+        "https://docs.googleusercontent.com/ " +
+        "https://spreadsheets.google.com/feeds/")
     redirect_to @auth_url
   end
 
   def login
     auth_token = @client.auth_code.get_token(params[:code], :redirect_uri => Settings.oauth2.redirect_url)
-    Rails.logger.info("DBG: token = #{auth_token.token}")
     session[:auth_token] = auth_token.token
-    redirect_to root_path
+    redirect_to session[:site_return_url] || root_path
   end
 
   private

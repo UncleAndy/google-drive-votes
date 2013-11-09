@@ -5,6 +5,8 @@ GoogleDriveVotes::Application.routes.draw do
       get :login
     end
   end
+
+  resource :user, :controller => 'user'
   
   root :to => "home#index"
 end

@@ -1,3 +1,13 @@
-%h1 Home#index
-%p Main session is #{(main_session ? "OK" : "BAD")}
-%p User session is #{(user_session ? "OK" : "BAD")}
+%h2{ :align => 'center' } Сеть доверия на основе документов Google
+
+%p{ :align => 'center' }
+  = link_to '#' do
+    %button.btn.btn-success.btn-lg Сеть доверия
+%p{ :align => 'center' }
+  = link_to user_path do
+    %button.btn.btn-primary.btn-lg Личный кабинет
+
+/
+  %p Main session is #{(main_session ? "OK" : "BAD")}
+  %p User session is #{(user_session ? "OK" : "BAD")}
+  %p Main document is #{(trust_net_doc ? "OK" : "BAD")}

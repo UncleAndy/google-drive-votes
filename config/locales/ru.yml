@@ -3,3 +3,6 @@
 
 ru:
   hello: "Hello world"
+
+  user_info:
+    idhash: "Ваш идентификатор"

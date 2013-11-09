@@ -2,3 +2,13 @@ oauth2:
   client_id: "47129595058.apps.googleusercontent.com"
   client_secret: "UAU43KL5pxkxcrU_iNA9pCw1"
   redirect_url: "http://trustnet.gplvote.org/auth/login"
+google:
+  user:
+    collection: "GPLVote документы сети доверия"
+    main_doc: "GPLVote основной документ пользователя"
+    main_doc_pages:
+      user_info: "Данные пользователя"
+      trust_net: "Сеть доверия"
+      votes: "Голосования"
+  main:
+    trust_net: "GPLVote сеть доверия"
