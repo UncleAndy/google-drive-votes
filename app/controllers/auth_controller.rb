@@ -3,7 +3,6 @@ class AuthController < ApplicationController
   before_filter :create_oauth2_client
   
   def show
-    session[:site_return_url] = request.env["HTTP_REFERER"]
     @auth_url = @client.auth_code.authorize_url(
       :redirect_uri => Settings.oauth2.redirect_url,
       :scope =>

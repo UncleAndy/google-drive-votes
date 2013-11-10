@@ -6,7 +6,9 @@ GoogleDriveVotes::Application.routes.draw do
     end
   end
 
-  resource :user, :controller => 'user'
+  resource :user, :controller => 'user' do
+    resources :thrust_votes
+  end
   
   root :to => "home#index"
 end

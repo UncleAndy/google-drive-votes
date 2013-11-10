@@ -50,13 +50,14 @@ class UserController < ApplicationController
         @user_info = @user_doc.add_worksheet(Settings.google.user.main_doc_pages.user_info, 1000, 3)
       end
       @user_info["A1"] = I18n.t('user_info.idhash')
+      @user_info["A2"] = I18n.t('user_info.trust_net_strnum')
       @user_info.save
     end
     @user_idhash = @user_info["B1"] if @user_info
 
     # Страница голосов в сети доверия
     @user_trust_votes = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net)
-    @user_trust_votes = @user_doc.add_worksheet(Settings.google.user.main_doc_pages.trust_net, 1000, 2) if !@user_trust_votes
+    @user_trust_votes = @user_doc.add_worksheet(Settings.google.user.main_doc_pages.trust_net, 1000, 3) if !@user_trust_votes
 
     # Страница голосов в голосованиях
     @user_votes = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.votes)

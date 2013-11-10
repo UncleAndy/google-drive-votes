@@ -3,13 +3,13 @@
 %p.input-group
   %span.input-group-addon
     ID
-  %input.form-control{ :value => @user_idhash, :readonly => true }
+  %input.form-control{ :value => idhash_str(@user_idhash), :readonly => true, :style => 'text-align: center;' }
 %br
 %p{ :align => 'center' }
   = link_to '#' do
     %button.btn.btn-primary.btn-lg Параметры пользователя
 %p{ :align => 'center' }
-  = link_to '#' do
+  = link_to user_thrust_votes_path do
     %button.btn.btn-primary.btn-lg Голоса в сети доверия
 %p{ :align => 'center' }
   = link_to '#' do

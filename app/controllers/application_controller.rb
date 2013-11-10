@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   before_filter :google_session_prepare
+  before_filter :main_document_prepare
   rescue_from GoogleDrive::AuthenticationError, :with => :user_google_session_reopen
 
   
@@ -22,6 +23,19 @@ class ApplicationController < ActionController::Base
     @trust_net
   end
   helper_method :trust_net_doc
+
+  def idhash_str(idhash)
+    res = ''
+    sep = ''
+    (idhash.size / 16).times do |idx|
+      start = idx*16
+      fin = start+16-1
+      res = "#{res}#{sep}#{idhash[start..fin]}"
+      sep = '-'
+    end
+    res
+  end
+  helper_method :idhash_str
   
   private
 
@@ -37,16 +51,44 @@ class ApplicationController < ActionController::Base
   end
 
   def main_document_prepare
-    if !@trust_net && @main_google_session
-      @trust_net = @main_google_session.spreadsheet_by_title(Settings.google.main.trust_net)
+    if @main_google_session
+      new_doc = false
+      @trust_net = @main_google_session.spreadsheet_by_title(Settings.google.main.trust_net) if !@trust_net
       if !@trust_net
+        new_doc = true
         @trust_net = @main_google_session.create_spreadsheet(Settings.google.main.trust_net)
       end
+
+      # Создаем страницы в документе сети доверия
+      # Страница участников
+      @trust_net_members = @trust_net.worksheet_by_title(Settings.google.main.pages.members)
+      if !@trust_net_members
+        if new_doc
+          @trust_net_members = @trust_net.worksheets()[0]
+          @trust_net_members.title = Settings.google.main.pages.members
+          @trust_net_members.max_rows = 100000
+          @trust_net_members.max_cols = 2
+          @trust_net_members.save
+        else
+          @trust_net_members = @trust_net.add_worksheet(Settings.google.main.pages.members, 50000, 2)
+        end
+      end
+
+      # Страница настроек
+      @trust_net_options = @trust_net.worksheet_by_title(Settings.google.main.pages.options)
+      @trust_net_options = @trust_net.add_worksheet(Settings.google.main.pages.options, 100, 2) if !@trust_net_options
+
+      # Страница результатов
+      @trust_net_results = @trust_net.worksheet_by_title(Settings.google.main.pages.results)
+      @trust_net_results = @trust_net.add_worksheet(Settings.google.main.pages.results, 50000, 2) if !@trust_net_results
     end
   end
   
   def login_required
-    redirect_to auth_path if !@user_google_session
+    if !@user_google_session
+      session[:site_return_url] = request.env['REQUEST_URI']
+      redirect_to auth_path
+    end
   end
 
   def user_google_session_reopen

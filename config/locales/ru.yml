@@ -6,3 +6,15 @@ ru:
 
   user_info:
     idhash: "Ваш идентификатор"
+    trust_net_strnum: "Строка в списке сети доверия"
+
+  are_you_sure: "Вы уверены?"
+  actions: "Действия"
+  edit: "Изменить"
+  delete: "Удалить"
+  new: "Создать"
+
+  user_thrust_net:
+    id: "Идентификатор"
+    verify_level: "Уровень верификации"
+    thrust_level: "Уровень доверия"

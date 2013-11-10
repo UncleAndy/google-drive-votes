@@ -12,3 +12,7 @@ google:
       votes: "Голосования"
   main:
     trust_net: "GPLVote сеть доверия"
+    pages:
+      members: "Участники"
+      options: "Настройки"
+      results: "Сводные результаты"
