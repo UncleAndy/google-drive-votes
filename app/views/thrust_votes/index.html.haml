@@ -23,13 +23,14 @@
     %tr
       %td
         = idhash_str(row[0])
-      %td
-        = row[1]
-      %td
+      %td.center
+        = link_to "http://spreadsheets.google.com/ccc?key=#{row[1]}", :target => '_blank' do
+          = row[1]
+      %td.center
         = row[2]
-      %td
+      %td.center
         = row[3]
-      %td
+      %td.center
         = link_to edit_user_thrust_vote_path(row[0]) do
-          %button.btn.btn-default.btn-xs
+          %button.btn.btn-primary.btn-xs
             = I18n.t('edit')
