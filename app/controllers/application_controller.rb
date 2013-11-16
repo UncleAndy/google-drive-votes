@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
 
   before_filter :google_session_prepare
   before_filter :main_document_prepare
+  before_filter :gon_init
   rescue_from GoogleDrive::AuthenticationError, :with => :user_google_session_reopen
 
   
@@ -39,6 +40,10 @@ class ApplicationController < ActionController::Base
   
   private
 
+  def gon_init
+    gon.is_ok = true
+  end
+  
   def google_session_prepare
     @user_google_session = GoogleDrive.login_with_oauth(session[:auth_token]) if session[:auth_token].present? && !@user_google_session
 

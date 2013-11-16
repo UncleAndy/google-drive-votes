@@ -8,6 +8,9 @@ GoogleDriveVotes::Application.routes.draw do
 
   resource :user, :controller => 'user' do
     resources :thrust_votes
+    member do
+      get :idhash_check
+    end
   end
   
   root :to => "home#index"

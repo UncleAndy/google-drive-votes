@@ -1,4 +1,8 @@
-%h2 Ваши голоса в сети доверия
+%h2.center= I18n.t("titles.user_thrust_votes")
+%h3.center
+  = link_to I18n.t("titles.home"), root_path
+  = "-"
+  = link_to I18n.t("titles.user_cabinet"), user_path
 %p
   = link_to new_user_thrust_vote_path do
     %button.btn.btn-primary
@@ -7,6 +11,8 @@
   %tr
     %th.center
       = I18n.t('user_thrust_net.id')
+    %th.center
+      = I18n.t('user_thrust_net.doc_key')
     %th.center.col-sm-1
       = I18n.t('user_thrust_net.verify_level')
     %th.center.col-sm-1
@@ -22,9 +28,8 @@
       %td
         = row[2]
       %td
+        = row[3]
+      %td
         = link_to edit_user_thrust_vote_path(row[0]) do
           %button.btn.btn-default.btn-xs
             = I18n.t('edit')
-        = link_to user_thrust_vote_path(row[0]), :method => 'delete', :confirm => I18n.t('are_you_sure') do
-          %button.btn.btn-default.btn-xs
-            = I18n.t('delete')

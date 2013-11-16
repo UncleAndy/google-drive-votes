@@ -1,0 +1,38 @@
+%h2.center= I18n.t("titles.user_thrust_vote_new")
+%h3.center
+  = link_to I18n.t("titles.home"), root_path
+  = "-"
+  = link_to I18n.t("titles.user_cabinet"), user_path
+  = "-"
+  = link_to I18n.t("titles.user_thrust_votes"), user_thrust_votes_path
+  
+= simple_form_for :vote, :url => user_thrust_vote_path(@vote.idhash), :method => :put, :html => {:autocomplete => "off"} do |f|
+  .center
+    = f.input :idhash, required: false, disabled: true, :input_html => {:size=> '76', :class=>'center'}
+    = link_to "проверка идентификатора пользователя", idhash_check_user_path, :target => "_blank"
+    = f.input :doc_key, required: false, disabled: true, :input_html => {:class=>'center'}
+  %br
+  .panel.panel-default
+    .panel-heading
+      %b
+        Уровень верификации
+    .panel-body.center
+      %p
+        Своим голосом вы должны удостоверить степень вашей уверенности что реальный человек имеет указанный им
+        идентификатор (в соответствии с его персональными данными, которые он должен вам предоставить) и что
+        именно он имеет доступ к своему документу с указанным им идентификатором.
+      = f.input :verify_level, required: true, label: false, input_html: { id: 'verify-level' }
+      %div{ id: 'slider-range-verify'}
+  .panel.panel-default
+    .panel-heading
+      %b
+        Уровень доверия
+    .panel-body.center
+      %p
+        Данным своим голосом вы должны указать насколько вы доверяете данному человеку при удостоверении им
+        других людей. Например, если вы уверены, что этот человек установил высокий уровень верификации
+        несуществующим в реальности людям, то, уровень доверия ему имеет смысл сделать минимальным.
+      = f.input :thrust_level, required: true, label: false, input_html: { id: 'thrust-level' }
+      %div{ id: 'slider-range-thrust'}
+  .center
+    = f.button :submit, "Готово", :class => 'btn btn-primary'

@@ -11,8 +11,12 @@ ru:
     error_notification:
       default_message: "Please review the problems below:"
     # Labels and hints examples
-    # labels:
-    #   defaults:
+    labels:
+      defaults:
+        idhash: "Идентификатор пользователя"
+        doc_key: "Идентификатор документа"
+        verify_level: "Уровень верификации"
+        thrust_level: "Уровень доверия"
     #     password: 'Password'
     #   user:
     #     new:

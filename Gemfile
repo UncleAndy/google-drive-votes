@@ -7,6 +7,8 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
+gem 'gon', '3.0.5'
 gem 'bootstrap-sass', '>= 3.0.0.0'
 gem 'haml-rails'
 gem 'pg'

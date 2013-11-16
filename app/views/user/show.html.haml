@@ -1,22 +1,25 @@
-%h1{:align => 'center'} Кабинет пользователя
-%br
+%h2.center= I18n.t("titles.user_cabinet")
+%h3.center
+  = link_to I18n.t("titles.home"), root_path
 %p.input-group
   %span.input-group-addon
-    ID
+    = I18n.t("your.idhash")
   %input.form-control{ :value => idhash_str(@user_idhash), :readonly => true, :style => 'text-align: center;' }
+  %span.input-group-addon
+    = I18n.t("your.idhash")
+%p.input-group
+  %span.input-group-addon
+    = I18n.t("your.doc_key")
+  %input.form-control{ :value => @user_doc.key, :readonly => true, :style => 'text-align: center;' }
+  %span.input-group-addon
+    = I18n.t("your.doc_key")
 %br
 %p{ :align => 'center' }
-  = link_to '#' do
-    %button.btn.btn-primary.btn-lg Параметры пользователя
-%p{ :align => 'center' }
   = link_to user_thrust_votes_path do
-    %button.btn.btn-primary.btn-lg Голоса в сети доверия
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.user_thrust_votes")
 %p{ :align => 'center' }
   = link_to '#' do
-    %button.btn.btn-primary.btn-lg Голоса в голосованиях
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.user_poll_votes")
 %p{ :align => 'center' }
   = link_to '#' do
-    %button.btn.btn-primary.btn-lg Собственные голосования
-%p{ :align => 'center' }
-  = link_to root_path do
-    %button.btn.btn-default.btn-lg На главную
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.user_votes")

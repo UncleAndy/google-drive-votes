@@ -2,10 +2,10 @@
 
 %p{ :align => 'center' }
   = link_to '#' do
-    %button.btn.btn-success.btn-lg Сеть доверия
+    %button.btn.btn-success.btn-lg= I18n.t("titles.thrust_net")
 %p{ :align => 'center' }
   = link_to user_path do
-    %button.btn.btn-primary.btn-lg Личный кабинет
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.user_cabinet")
 
 /
   %p User session is #{(user_session ? "OK" : "BAD")}
