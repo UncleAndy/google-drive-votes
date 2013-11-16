@@ -1,0 +1,58 @@
+%h2.center= I18n.t("titles.trust_net")
+%h3.center
+  = link_to I18n.t("titles.home"), root_path
+%table.table.table-bordered.table-hover.table-condensed
+  %tr
+    %th.center
+      = I18n.t('user_trust_net.id')
+    %th.center
+      = I18n.t('user_trust_net.doc_key')
+    %th.center.col-sm-1
+      = I18n.t('user_trust_net.verify_level')
+      %br
+      - if @sort == 'verify'
+        = link_to trust_net_path(:sort => 'verify_desc') do
+          %span.glyphicon.glyphicon-sort-by-attributes-alt
+      - elsif @sort == 'verify_desc'
+        = link_to trust_net_path(:sort => 'verify') do
+          %span.glyphicon.glyphicon-sort-by-attributes
+      - else
+        = link_to trust_net_path(:sort => 'verify') do
+          %span.glyphicon.glyphicon-sort
+    %th.center.col-sm-1
+      = I18n.t('user_trust_net.trust_level')
+      %br
+      - if @sort == 'trust'
+        = link_to trust_net_path(:sort => 'trust_desc') do
+          %span.glyphicon.glyphicon-sort-by-attributes-alt
+      - elsif @sort == 'trust_desc'
+        = link_to trust_net_path(:sort => 'trust') do
+          %span.glyphicon.glyphicon-sort-by-attributes
+      - else
+        = link_to trust_net_path(:sort => 'trust') do
+          %span.glyphicon.glyphicon-sort
+    %th.center.col-sm-1
+      = I18n.t('user_trust_net.votes_count')
+      %br
+      - if @sort == 'count'
+        = link_to trust_net_path(:sort => 'count_desc') do
+          %span.glyphicon.glyphicon-sort-by-attributes-alt
+      - elsif @sort == 'count_desc'
+        = link_to trust_net_path(:sort => 'count') do
+          %span.glyphicon.glyphicon-sort-by-attributes
+      - else
+        = link_to trust_net_path(:sort => 'count') do
+          %span.glyphicon.glyphicon-sort
+  - @results.each do |row|
+    %tr
+      %td
+        = row[0]
+      %td.center
+        = link_to "http://spreadsheets.google.com/ccc?key=#{row[1]}", :target => '_blank' do
+          = row[1]
+      %td.center
+        = row[2]
+      %td.center
+        = row[3]
+      %td.center
+        = row[4]

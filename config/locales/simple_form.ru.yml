@@ -16,7 +16,7 @@ ru:
         idhash: "Идентификатор пользователя"
         doc_key: "Идентификатор документа"
         verify_level: "Уровень верификации"
-        thrust_level: "Уровень доверия"
+        trust_level: "Уровень доверия"
     #     password: 'Password'
     #   user:
     #     new:

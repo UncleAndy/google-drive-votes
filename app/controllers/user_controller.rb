@@ -60,7 +60,7 @@ class UserController < ApplicationController
     @user_idhash = @user_info["B1"] if @user_info
     @user_trust_str_num = @user_info["B2"] if @user_info
 
-    # Страница голосов в сети доверия (idhash, main_doc_url_key, verify_level, thrust_level)
+    # Страница голосов в сети доверия (idhash, main_doc_url_key, verify_level, trust_level)
     @user_trust_votes = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net)
     @user_trust_votes = @user_doc.add_worksheet(Settings.google.user.main_doc_pages.trust_net, 1000, 4) if !@user_trust_votes
 

@@ -1,28 +1,28 @@
-%h2.center= I18n.t("titles.user_thrust_votes")
+%h2.center= I18n.t("titles.user_trust_votes")
 %h3.center
   = link_to I18n.t("titles.home"), root_path
   = "-"
   = link_to I18n.t("titles.user_cabinet"), user_path
 %p
-  = link_to new_user_thrust_vote_path do
+  = link_to new_user_trust_vote_path do
     %button.btn.btn-primary
       = I18n.t('new')
 %table.table.table-bordered.table-hover.table-condensed
   %tr
     %th.center
-      = I18n.t('user_thrust_net.id')
+      = I18n.t('user_trust_net.id')
     %th.center
-      = I18n.t('user_thrust_net.doc_key')
+      = I18n.t('user_trust_net.doc_key')
     %th.center.col-sm-1
-      = I18n.t('user_thrust_net.verify_level')
+      = I18n.t('user_trust_net.verify_level')
     %th.center.col-sm-1
-      = I18n.t('user_thrust_net.thrust_level')
+      = I18n.t('user_trust_net.trust_level')
     %th.center.col-sm-2
       = I18n.t('actions')
   - @user_trust_votes.rows.each do |row|
     %tr
       %td
-        = idhash_str(row[0])
+        = row[0]
       %td.center
         = link_to "http://spreadsheets.google.com/ccc?key=#{row[1]}", :target => '_blank' do
           = row[1]
@@ -31,6 +31,6 @@
       %td.center
         = row[3]
       %td.center
-        = link_to edit_user_thrust_vote_path(row[0]) do
+        = link_to edit_user_trust_vote_path(row[0]) do
           %button.btn.btn-primary.btn-xs
             = I18n.t('edit')

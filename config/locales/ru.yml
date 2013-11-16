@@ -14,21 +14,22 @@ ru:
   delete: "Удалить"
   new: "Создать"
 
-  user_thrust_net:
+  user_trust_net:
     id: "Идентификатор пользователя"
     doc_key: "Идентификатор документа"
     verify_level: "Уровень верификации"
-    thrust_level: "Уровень доверия"
+    trust_level: "Уровень доверия"
+    votes_count: "Количество голосов"
 
   titles:
     home: "Главная"
-    thrust_net: "Сеть доверия"
+    trust_net: "Сеть доверия"
     user_cabinet: "Личный кабинет"
-    user_thrust_votes: "Голоса в сети доверия"
+    user_trust_votes: "Голоса в сети доверия"
     user_poll_votes: "Голоса в голосованиях"
     user_votes: "Собственные голосования"
-    user_thrust_vote_new: "Новый голос в сети доверия"
-    user_thrust_vote_edit: "Изменение голоса в сети доверия"
+    user_trust_vote_new: "Новый голос в сети доверия"
+    user_trust_vote_edit: "Изменение голоса в сети доверия"
 
   your:
     idhash: "Ваш идентификатор"

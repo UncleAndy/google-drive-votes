@@ -1,12 +1,12 @@
-%h2.center= I18n.t("titles.user_thrust_vote_new")
+%h2.center= I18n.t("titles.user_trust_vote_new")
 %h3.center
   = link_to I18n.t("titles.home"), root_path
   = "-"
   = link_to I18n.t("titles.user_cabinet"), user_path
   = "-"
-  = link_to I18n.t("titles.user_thrust_votes"), user_thrust_votes_path
+  = link_to I18n.t("titles.user_trust_votes"), user_trust_votes_path
   
-= simple_form_for :vote, :url => user_thrust_votes_path, :method => :post, :html => {:autocomplete => "off"} do |f|
+= simple_form_for :vote, :url => user_trust_votes_path, :method => :post, :html => {:autocomplete => "off"} do |f|
   .center
     = f.input :idhash, required: true
     = link_to "проверка идентификатора пользователя", idhash_check_user_path, :target => "_blank"
@@ -32,7 +32,7 @@
         Данным своим голосом вы должны указать насколько вы доверяете данному человеку при удостоверении им
         других людей. Например, если вы уверены, что этот человек установил высокий уровень верификации
         несуществующим в реальности людям, то, уровень доверия ему имеет смысл сделать минимальным.
-      = f.input :thrust_level, required: true, label: false, input_html: { id: 'thrust-level' }
-      %div{ id: 'slider-range-thrust'}
+      = f.input :trust_level, required: true, label: false, input_html: { id: 'trust-level' }
+      %div{ id: 'slider-range-trust'}
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'

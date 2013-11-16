@@ -7,11 +7,13 @@ GoogleDriveVotes::Application.routes.draw do
   end
 
   resource :user, :controller => 'user' do
-    resources :thrust_votes
+    resources :trust_votes
     member do
       get :idhash_check
     end
   end
+
+  resource :trust_net, :controller => 'trust_net', :only => [:show]
   
   root :to => "home#index"
 end

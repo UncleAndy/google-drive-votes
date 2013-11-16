@@ -4,7 +4,7 @@
 %p.input-group
   %span.input-group-addon
     = I18n.t("your.idhash")
-  %input.form-control{ :value => idhash_str(@user_idhash), :readonly => true, :style => 'text-align: center;' }
+  %input.form-control{ :value => @user_idhash, :readonly => true, :style => 'text-align: center;' }
   %span.input-group-addon
     = I18n.t("your.idhash")
 %p.input-group
@@ -15,11 +15,11 @@
     = I18n.t("your.doc_key")
 %br
 %p{ :align => 'center' }
-  = link_to user_thrust_votes_path do
-    %button.btn.btn-primary.btn-lg= I18n.t("titles.user_thrust_votes")
+  = link_to user_trust_votes_path do
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.user_trust_votes")
 %p{ :align => 'center' }
   = link_to '#' do
-    %button.btn.btn-warning.btn-lg= I18n.t("titles.user_poll_votes")
+    %button.btn.btn-default.btn-lg= I18n.t("titles.user_poll_votes")
 %p{ :align => 'center' }
   = link_to '#' do
     %button.btn.btn-default.btn-lg= I18n.t("titles.user_votes")

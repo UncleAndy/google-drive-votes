@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
           @trust_net_members.max_cols = 2
           @trust_net_members.save
         else
-          @trust_net_members = @trust_net.add_worksheet(Settings.google.main.pages.members, 50000, 2)
+          @trust_net_members = @trust_net.add_worksheet(Settings.google.main.pages.members, 10000, 2)
         end
       end
 
@@ -85,7 +85,7 @@ class ApplicationController < ActionController::Base
 
       # Страница результатов
       @trust_net_results = @trust_net.worksheet_by_title(Settings.google.main.pages.results)
-      @trust_net_results = @trust_net.add_worksheet(Settings.google.main.pages.results, 50000, 2) if !@trust_net_results
+      @trust_net_results = @trust_net.add_worksheet(Settings.google.main.pages.results, 10000, 5) if !@trust_net_results
     end
   end
   
