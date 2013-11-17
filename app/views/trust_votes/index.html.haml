@@ -22,7 +22,8 @@
   - @user_trust_votes.rows.each do |row|
     %tr
       %td
-        = row[0]
+        = link_to info_user_path(:idhash => row[0]) do
+          = row[0]
       %td.center
         = link_to "http://spreadsheets.google.com/ccc?key=#{row[1]}", :target => '_blank' do
           = row[1]

@@ -10,6 +10,7 @@ GoogleDriveVotes::Application.routes.draw do
     resources :trust_votes
     member do
       get :idhash_check
+      get :info
     end
   end
 
