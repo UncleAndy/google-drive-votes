@@ -35,14 +35,14 @@ $( document ).ready(function() {
   });
   $( "#verify-level" ).val( $( "#slider-range-verify" ).slider( "value" ) );
 
-  $( "#slider-range-thrust" ).slider({
+  $( "#slider-range-trust" ).slider({
       range: "min",
       min: -10,
       max: 10,
-      value: gon.thrust_level,
+      value: gon.trust_level,
       slide: function( event, ui ) {
-        $( "#thrust-level" ).val( ui.value );
+        $( "#trust-level" ).val( ui.value );
       }
   });
-  $( "#thrust-level" ).val( $( "#slider-range-thrust" ).slider( "value" ) );
+  $( "#trust-level" ).val( $( "#slider-range-trust" ).slider( "value" ) );
 });
