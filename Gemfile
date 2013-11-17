@@ -16,6 +16,7 @@ gem 'simple_form'
 gem 'rails_config'
 gem 'google_drive'
 group :development do
+  gem 'capistrano', '2.9.0'
   gem 'html2haml'
   gem 'rails_layout'
 end
