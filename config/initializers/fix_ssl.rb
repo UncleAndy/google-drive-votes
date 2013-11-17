@@ -22,6 +22,7 @@ module GoogleDrive
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           ca_file_rpmos = "/etc/pki/tls/certs/ca-bundle.crt"
           if File.exist?(ca_file_rpmos)
+            Rails.logger.info("DBG: Set CA file for SSL")
             http.ca_file = ca_file_rpmos
           end
           http.start() do
