@@ -19,7 +19,9 @@ set :deploy_to, "/home/deployer/projects/#{ project_name }"
 
 desc "Restart of Unicorn"
 task :restart, :except => { :no_release => true } do
-  run "kill -s USR2 `cat /home/deployer/projects/#{ project_name }/shared/pids/unicorn.pid`"
+  run "kill -s QUIT `cat /home/deployer/projects/#{ project_name }/shared/pids/unicorn.pid`"
+  run "sleep 3"
+  run "cd #{current_path} ; bundle exec unicorn_rails -D -E production -c config/unicorn.rb"
 end
 
 desc "Start unicorn"
