@@ -20,7 +20,7 @@ module GoogleDrive
           http = @proxy.new(uri.host, uri.port)
           http.use_ssl = true
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-          ca_file_rpmos = "/etc/pki/tls/certs/ca-bundle.crt"
+          ca_file_rpmos = "/etc/ssl/certs/cacert.pem"
           if FileTest.exists?(ca_file_rpmos)
             Rails.logger.info("DBG: Set CA file for SSL")
             http.ca_file = ca_file_rpmos
