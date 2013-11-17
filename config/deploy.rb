@@ -1,7 +1,7 @@
 require 'bundler/capistrano'
 load 'deploy/assets'
 
-set :repository, 'git@github.com:gimite/google-drive-ruby.git'
+set :repository, 'git@github.com:UncleAndy/google-drive-votes.git'
 set :scm, :git
 
 server '193.106.94.91', :app, :web, :db, :primary => true
@@ -10,7 +10,6 @@ set :ssh_options, { :forward_agent => true }
 default_run_options[:shell] = 'bash -l'
 
 set :user, 'deployer'
-set :group, 'staff'
 set :use_sudo, false
 set :rails_env, 'production'
 
