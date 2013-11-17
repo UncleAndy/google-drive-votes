@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   before_filter :main_document_prepare
   before_filter :gon_init
   rescue_from GoogleDrive::AuthenticationError, :with => :user_google_session_reopen
-
+  rescue_from OpenSSL::SSL, :with => :ssl_connection_errors
   
   def user_session
     @user_google_session
@@ -99,5 +99,10 @@ class ApplicationController < ActionController::Base
   def user_google_session_reopen
     @user_google_session = nil
     login_required
+  end
+
+  def ssl_connection_errors
+    flash[:alert] = I18n.t('errors.google_connection_error')
+    redirect_to root_path
   end
 end
