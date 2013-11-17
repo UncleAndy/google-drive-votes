@@ -24,7 +24,7 @@ end
 
 desc "Start unicorn"
 task :start, :except => { :no_release => true } do
-  run "cd #{current_path} ; bundle exec unicorn_rails -c config/unicorn.rb -D -E #{ rails_env }"
+  run "cd #{current_path} ; bundle exec unicorn_rails -D -E production -c config/unicorn.rb"
 end
 
 desc "Stop unicorn"
@@ -38,5 +38,6 @@ namespace :deploy do
   desc "Symlinks the database.yml"
   task :symlink_db, :roles => :app do
     run "ln -nfs #{deploy_to}/shared/config/database.yml #{release_path}/config/database.yml"
+    run "ln -nfs #{deploy_to}/shared/config/google.yml #{release_path}/config/google.yml"
   end
 end
