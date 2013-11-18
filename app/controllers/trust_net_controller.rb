@@ -31,6 +31,9 @@ class TrustNetController < ApplicationController
     
     respond_to do |format|
       format.html
+      format.xml { render :xml => @members.rows.to_xml }
+      format.js { render :json => @members.rows.to_json }
+      format.json { render :json => @members.rows.to_json }
     end
   end
   
