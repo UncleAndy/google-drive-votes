@@ -7,7 +7,7 @@ err_log    = "#{rails_root}/log/unicorn_error.log"
 old_pid    = pid_file + '.oldbin'
 
 timeout 300
-worker_processes 4 # Здесь тоже в зависимости от нагрузки, погодных условий и текущей фазы луны
+worker_processes 16
 listen socket_file, :backlog => 1024
 pid pid_file
 stderr_path err_log
