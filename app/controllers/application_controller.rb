@@ -115,6 +115,7 @@ class ApplicationController < ActionController::Base
 
   def user_google_session_reopen
     if @flag_main_auth_process
+      @main_google_session = nil
       google_session_prepare
     else
       @user_google_session = nil
