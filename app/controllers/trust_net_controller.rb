@@ -1,5 +1,5 @@
 class TrustNetController < ApplicationController
-  before_filter :set_sort
+  before_filter :set_sort, :only => [:show]
   
   def show
     if @sort == 'verify'
@@ -26,6 +26,14 @@ class TrustNetController < ApplicationController
     end
   end
 
+  def members
+    @members = @trust_net_members.rows
+    
+    respond_to do |format|
+      format.html
+    end
+  end
+  
   private
 
   def set_sort

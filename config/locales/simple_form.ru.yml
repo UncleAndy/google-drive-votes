@@ -17,11 +17,14 @@ ru:
         doc_key: "Идентификатор документа"
         verify_level: "Уровень верификации"
         trust_level: "Уровень доверия"
-        emails: "Адреса электронной почты через запятую"
+        emails: "Адреса электронной почты"
         skype: "Skype"
         icq: "ICQ"
         jabber: "Jabber"
         phones: "Номера телефонов"
+        facebook: "Профиль сети Facebook"
+        vk: "Профиль сети ВКонтакте"
+        odnoklassniki: "Профиль сети Одноклассники"
     #     password: 'Password'
     #   user:
     #     new:

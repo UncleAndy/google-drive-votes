@@ -14,7 +14,11 @@ GoogleDriveVotes::Application.routes.draw do
     end
   end
 
-  resource :trust_net, :controller => 'trust_net', :only => [:show]
+  resource :trust_net, :controller => 'trust_net', :only => [:show] do
+    member do
+      get :members
+    end
+  end
   
   root :to => "home#index"
 end

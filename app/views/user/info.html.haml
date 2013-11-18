@@ -19,11 +19,31 @@
 %br
 .center
   = simple_form_for :user, :url => user_path, :method => :put, :html => {:autocomplete => "off"} do |f|
-    = f.input :emails, required: false, :disabled => true
-    = f.input :skype, required: false, :disabled => true
-    = f.input :icq, required: false, :disabled => true
-    = f.input :jabber, required: false, :disabled => true
-    = f.input :phones, required: false, :disabled => true
+    %table.invis.wide
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.emails")
+        %td.left= f.input_field :emails, required: false, :disabled => true
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.skype")
+        %td.left= f.input_field :skype, required: false, :disabled => true
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.icq")
+        %td.left= f.input_field :icq, required: false, :disabled => true
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.jabber")
+        %td.left= f.input_field :jabber, required: false, :disabled => true
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.phones")
+        %td.left= f.input_field :phones, required: false, :disabled => true
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.facebook")
+        %td.left= f.input_field :facebook, required: false, :disabled => true
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.vk")
+        %td.left= f.input_field :vk, required: false, :disabled => true
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.odnoklassniki")
+        %td.left= f.input_field :odnoklassniki, required: false, :disabled => true
 %br
 %p{ :align => 'center' }
   = link_to :back do

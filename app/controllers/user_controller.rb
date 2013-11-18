@@ -38,6 +38,12 @@ class UserController < ApplicationController
     @user_info["B6"] = params[:user][:jabber]
     @user_info["A7"] = I18n.t("simple_form.labels.defaults.phones")
     @user_info["B7"] = params[:user][:phones]
+    @user_info["A8"] = I18n.t("simple_form.labels.defaults.facebook")
+    @user_info["B8"] = params[:user][:facebook]
+    @user_info["A9"] = I18n.t("simple_form.labels.defaults.vk")
+    @user_info["B9"] = params[:user][:vk]
+    @user_info["A10"] = I18n.t("simple_form.labels.defaults.odnoklassniki")
+    @user_info["B10"] = params[:user][:odnoklassniki]
     @user_info.save
     redirect_to user_path
   end
@@ -54,6 +60,9 @@ class UserController < ApplicationController
       @user.icq = @user_info["B5"]
       @user.jabber = @user_info["B6"]
       @user.phones = @user_info["B7"]
+      @user.facebook = @user_info["B8"]
+      @user.vk = @user_info["B9"]
+      @user.odnoklassniki = @user_info["B10"]
     end
   end
   

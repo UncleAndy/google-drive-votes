@@ -1,6 +1,19 @@
 %h2.center= I18n.t("titles.trust_net")
 %h3.center
   = link_to I18n.t("titles.home"), root_path
+%table.invis.wide
+  %tr
+    %td.right{:width => '50%'}= I18n.t("trust_net.itaration_count")
+    %td
+      %input.form-control{ :value => @itaration_count, :readonly => true, :style => 'text-align: center;' }
+  %tr
+    %td.right{:width => '50%'}= I18n.t("trust_net.average_limit")
+    %td
+      %input.form-control{ :value => @average_limit, :readonly => true, :style => 'text-align: center;' }
+%p{ :align => 'center' }
+  = link_to members_trust_net_path do
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.trust_net_members")
+%br
 %table.table.table-bordered.table-hover.table-condensed
   %tr
     %th.center

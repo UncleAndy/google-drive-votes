@@ -16,3 +16,6 @@ google:
       members: "Участники"
       options: "Настройки"
       results: "Сводные результаты"
+trust_net_default:
+  itaration_count: 5
+  average_limit: 10

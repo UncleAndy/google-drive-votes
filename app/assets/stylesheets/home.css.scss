@@ -7,6 +7,16 @@
   vertical-align: middle;
 }
 
+.left {
+  text-align: left;
+  vertical-align: middle;
+}
+
+.right {
+  text-align: right;
+  vertical-align: middle;
+}
+
 table tr th.center {
   text-align: center;
   vertical-align: middle;
@@ -14,4 +24,13 @@ table tr th.center {
 
 table tr td {
   background-color: white;
+}
+
+table.invis tr td{
+  background-color: #eee;
+  border: 0;
+}
+
+table.wide {
+  width: 100%;
 }

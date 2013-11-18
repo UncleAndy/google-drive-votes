@@ -1,0 +1,20 @@
+%h2.center= I18n.t("titles.trust_net_members")
+%h3.center
+  = link_to I18n.t("titles.home"), root_path
+  = "-"
+  = link_to I18n.t("titles.trust_net"), trust_net_path
+%br
+%table.table.table-bordered.table-hover.table-condensed
+  %tr
+    %th.center
+      = I18n.t('user_trust_net.id')
+    %th.center
+      = I18n.t('user_trust_net.doc_key')
+  - @members.each do |row|
+    %tr
+      %td
+        = link_to info_user_path(:idhash => row[0]) do
+          = row[0]
+      %td.center
+        = link_to "http://spreadsheets.google.com/ccc?key=#{row[1]}", :target => '_blank' do
+          = row[1]

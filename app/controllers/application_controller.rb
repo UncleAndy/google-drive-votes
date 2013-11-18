@@ -81,7 +81,21 @@ class ApplicationController < ActionController::Base
       # Страница настроек
       @trust_net_options = @trust_net.worksheet_by_title(Settings.google.main.pages.options)
       @trust_net_options = @trust_net.add_worksheet(Settings.google.main.pages.options, 100, 2) if !@trust_net_options
-
+      @itaration_count = @trust_net_options["B1"]
+      if @itaration_count.blank?
+        @itaration_count = Settings.trust_net_default.itaration_count
+        @trust_net_options["A1"] = I18n.t('trust_net.itaration_count')
+        @trust_net_options["B1"] = @itaration_count
+        @trust_net_options.save
+      end
+      @average_limit = @trust_net_options["B2"]
+      if @average_limit.blank?
+        @average_limit = Settings.trust_net_default.average_limit
+        @trust_net_options["A2"] = I18n.t('trust_net.average_limit')
+        @trust_net_options["B2"] = @average_limit
+        @trust_net_options.save
+      end
+      
       # Страница результатов
       @trust_net_results = @trust_net.worksheet_by_title(Settings.google.main.pages.results)
       @trust_net_results = @trust_net.add_worksheet(Settings.google.main.pages.results, 10000, 5) if !@trust_net_results
