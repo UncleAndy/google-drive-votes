@@ -18,15 +18,9 @@ module GoogleDrive
         def request_raw(method, url, data, extra_header, auth)
           uri = URI.parse(url)
           http = @proxy.new(uri.host, uri.port)
-          http.set_debug_output $stderr
           http.use_ssl = true
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           http.ssl_version = :SSLv3
-          ca_file_rpmos = "/etc/ssl/certs/cacert.pem"
-          if FileTest.exists?(ca_file_rpmos)
-            Rails.logger.info("DBG: Set CA file for SSL")
-            http.ca_file = ca_file_rpmos
-          end
           http.start() do
             path = uri.path + (uri.query ? "?#{uri.query}" : "")
             header = auth_header(auth).merge(extra_header)
