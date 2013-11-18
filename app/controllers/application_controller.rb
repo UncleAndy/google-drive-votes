@@ -46,15 +46,18 @@ class ApplicationController < ActionController::Base
   def google_session_prepare
     @user_google_session = GoogleDrive.login_with_oauth(session[:auth_token]) if session[:auth_token].present? && !@user_google_session
 
+    @flag_main_auth_process = true
     @main_google_session = GoogleDrive.restore_session(session[:main_auth_tokens]) if session[:main_auth_tokens].present? && !@main_google_session
     if !@main_google_session
       google_auth = YAML.load_file("#{Rails.root}/config/google.yml")
       @main_google_session = GoogleDrive.login(google_auth['login'], google_auth['password']) if google_auth
       session[:main_auth_tokens] = @main_google_session.auth_tokens
     end
+    @flag_main_auth_process = false
   end
 
   def main_document_prepare
+    @flag_main_auth_process = true
     if @main_google_session
       new_doc = false
       @trust_net = @main_google_session.spreadsheet_by_title(Settings.google.main.trust_net) if !@trust_net
@@ -100,6 +103,7 @@ class ApplicationController < ActionController::Base
       @trust_net_results = @trust_net.worksheet_by_title(Settings.google.main.pages.results)
       @trust_net_results = @trust_net.add_worksheet(Settings.google.main.pages.results, 10000, 5) if !@trust_net_results
     end
+    @flag_main_auth_process = false
   end
   
   def login_required
@@ -110,7 +114,11 @@ class ApplicationController < ActionController::Base
   end
 
   def user_google_session_reopen
-    @user_google_session = nil
-    login_required
+    if @flag_main_auth_process
+      google_session_prepare
+    else
+      @user_google_session = nil
+      login_required
+    end
   end
 end
