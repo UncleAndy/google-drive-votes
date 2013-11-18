@@ -21,6 +21,7 @@ module GoogleDrive
           http.set_debug_output $stderr
           http.use_ssl = true
           http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          http.ssl_version = :SSLv3
           ca_file_rpmos = "/etc/ssl/certs/cacert.pem"
           if FileTest.exists?(ca_file_rpmos)
             Rails.logger.info("DBG: Set CA file for SSL")
