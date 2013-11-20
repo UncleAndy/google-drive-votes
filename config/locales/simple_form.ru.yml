@@ -15,8 +15,10 @@ ru:
       defaults:
         idhash: "Идентификатор пользователя"
         doc_key: "Идентификатор документа"
-        verify_level: "Уровень верификации"
-        trust_level: "Уровень доверия"
+        vote_idhash: "Идентификатор пользователя"
+        vote_doc_key: "Идентификатор документа"
+        vote_verify_level: "Уровень верификации"
+        vote_trust_level: "Уровень доверия"
         emails: "Адреса электронной почты"
         skype: "Skype"
         icq: "ICQ"

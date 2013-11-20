@@ -27,7 +27,7 @@ table tr td.center {
   vertical-align: middle;
 }
 
-table tr td {
+table.white tr td {
   background-color: white;
 }
 
@@ -38,4 +38,8 @@ table.invis tr td{
 
 table.wide {
   width: 100%;
+}
+
+table.padded tr td {
+  padding: 2px;
 }

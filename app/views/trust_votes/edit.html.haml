@@ -21,8 +21,17 @@
         Своим голосом вы должны удостоверить степень вашей уверенности что реальный человек имеет указанный им
         идентификатор (в соответствии с его персональными данными, которые он должен вам предоставить) и что
         именно он имеет доступ к своему документу с указанным им идентификатором.
-      = f.input :vote_verify_level, required: true, label: false, input_html: { id: 'verify-level' }
-      %div{ id: 'slider-range-verify'}
+      %table.white.wide.padded
+        %tr
+          %td.left{:width => '20%'}
+            Уверен в обратном
+          %td.center
+            = f.input_field :vote_verify_level, required: true, label: false, id: 'verify-level', size: 4, style: 'text-align: center;', readonly: true
+          %td.right{:width => '20%'}
+            Польностью уверен
+        %tr
+          %td{:colspan => 3}
+            %div{ id: 'slider-range-verify' }
   .panel.panel-default
     .panel-heading
       %b
@@ -32,7 +41,16 @@
         Данным своим голосом вы должны указать насколько вы доверяете данному человеку при удостоверении им
         других людей. Например, если вы уверены, что этот человек установил высокий уровень верификации
         несуществующим в реальности людям, то, уровень доверия ему имеет смысл сделать минимальным.
-      = f.input :vote_trust_level, required: true, label: false, input_html: { id: 'trust-level' }
-      %div{ id: 'slider-range-trust'}
+      %table.white.wide.padded
+        %tr
+          %td.left{:width => '20%'}
+            Не довереяю
+          %td.center
+            = f.input_field :vote_trust_level, required: true, label: false, id: 'trust-level', size: 4, style: 'text-align: center;', readonly: true
+          %td.right{:width => '20%'}
+            Польностью доверияю
+        %tr
+          %td{:colspan => 3}
+            %div{ id: 'slider-range-trust'}
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'
