@@ -2,8 +2,6 @@
 class UserController < ApplicationController
   before_filter :login_required
   before_filter :set_user_by_id, :only => [:info]
-
-  rescue_from GoogleDrive::AuthenticationError, :with => :user_google_session_reopen
   
   def show
     redirect_to new_user_path and return if session[:idhash].blank?
@@ -81,10 +79,5 @@ class UserController < ApplicationController
       @user_info = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
       @user_idhash = @user_info["B1"] if @user_info
     end
-  end
-  
-  def user_google_session_reopen
-    session[:auth_token] = nil
-    login_required
   end
 end

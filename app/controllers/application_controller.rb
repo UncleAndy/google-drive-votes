@@ -16,6 +16,8 @@ require 'yaml'
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
+  rescue_from GoogleDrive::AuthenticationError, :with => :user_google_session_reopen
+  
   before_filter :gon_init
   
   def spaced_str(idhash)
@@ -38,6 +40,11 @@ class ApplicationController < ActionController::Base
       session[:site_return_url] = request.env['REQUEST_URI']
       redirect_to auth_path
     end
+  end
+
+  def user_google_session_reopen
+    session[:auth_token] = nil
+    login_required
   end
   
   def gon_init
