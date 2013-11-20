@@ -123,10 +123,10 @@ class AuthController < ApplicationController
     end
 
     # Проверяем регистрацию пользователя в сети доверия
-    member = TrustNetMembers.find_by_idhash(idhash)
+    member = TrustNetMember.find_by_idhash(idhash)
     if !member
-      doc_member = TrustNetMembers.find_by_doc_key(user_doc.key)
-      TrustNetMembers.create({:idhash => idhash, :doc_key => user_doc.key}) if !doc_member
+      doc_member = TrustNetMember.find_by_doc_key(user_doc.key)
+      TrustNetMember.create({:idhash => idhash, :doc_key => user_doc.key}) if !doc_member
     end
   end
 end
