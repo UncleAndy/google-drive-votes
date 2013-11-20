@@ -1,8 +1,9 @@
 class TrustVotesController < ApplicationController
-  before_filter :set_user_doc
-  before_filter :set_trust_vote, :exclude => [:index, :new, :create]
-
+  before_filter :login_required
+  before_filter :set_user_data
+  
   def index
+    @user_trust_votes = UserTrustNetVote.by_owner(@idhash)
   end
 
   def new
@@ -12,74 +13,83 @@ class TrustVotesController < ApplicationController
   
   def create
     # Сначала проверяем что уже нет строки с таким идентиикатором пользователя или документа
-    founded_idhash = false
-    founded_doc_key = false
-    row_num = 1
-    @user_trust_votes.rows.each do |row|
-      if row[0] == params[:vote][:idhash]
-        founded_idhash = true
-        break
-      end
-      if row[1] == params[:vote][:doc_key]
-        founded_doc_key = true
-        break
-      end
-      if row[0].blank?
-        break
-      end
-      row_num += 1
-    end
+    founded_idhash = UserTrustNetVote.find_by_vote_idhash(params[:vote][:idhash])
+    founded_doc_key = UserTrustNetVote.find_by_vote_doc_key(params[:vote][:doc_key])
 
     if founded_idhash
       flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
     elsif founded_doc_key
       flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
     else
-      @user_trust_votes["A#{row_num}"] = params[:vote][:idhash]
-      @user_trust_votes["B#{row_num}"] = params[:vote][:doc_key]
-      @user_trust_votes["C#{row_num}"] = params[:vote][:verify_level]
-      @user_trust_votes["D#{row_num}"] = params[:vote][:trust_level]
-      @user_trust_votes.save
+      GoogleUserDoc.init(session)
+      trust_votes = GoogleUserDoc.doc_trust_votes_page
+      # Находим последнюю свободную строку в документе и в нее прописываем новый голос
+      row_num = 1
+      while trust_votes["A#{row_num}"].present?
+        row_num += 1
+      end
+
+      trust_votes["A#{row_num}"] = params[:vote][:vote_idhash]
+      trust_votes["B#{row_num}"] = params[:vote][:vote_doc_key]
+      trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
+      trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
+      trust_votes.save
+
+      if trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
+        UserTrustNetVote.create({
+                                :idhash => @idhash,
+                                :vote_idhash => params[:vote][:vote_idhash],
+                                :vote_doc_key => params[:vote][:vote_doc_key],
+                                :vote_verify_level => params[:vote][:vote_verify_level],
+                                :vote_trust_level => params[:vote][:vote_trust_level]
+                                })
+      else
+        flash[:alert] = I18n.t("errors.google_save_error")
+      end
     end
     redirect_to user_trust_votes_path
   end
 
   def edit
-    gon.verify_level = @trust_vote[:verify_level]
-    gon.trust_level = @trust_vote[:trust_level]
-    @vote = OpenStruct.new
-    @vote.idhash = @trust_vote[:idhash]
-    @vote.doc_key = @trust_vote[:doc_key]
+    @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
+    if @vote
+      gon.verify_level = @vote.vote_verify_level
+      gon.trust_level = @vote.vote_trust_level
+    else
+      flash[:alert] = I18n.t("errors.user_trust_vote_not_found")
+      redirect_to :back
+    end
   end
 
   def update
-    @user_trust_votes["C#{@trust_vote_row_num}"] = params[:vote][:verify_level]
-    @user_trust_votes["D#{@trust_vote_row_num}"] = params[:vote][:trust_level]
-    @user_trust_votes.save
+    @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
+    @vote.update_attributes(params[:vote]) if @vote
+
+    GoogleUserDoc.init(session)
+    trust_votes = GoogleUserDoc.doc_trust_votes_page
+    # Находим строку с данным голосом и прописываем его изменение
+    row_num = 1
+    while trust_votes["A#{row_num}"].present? &&
+          trust_votes["A#{row_num}"] != params[:id]
+      row_num += 1
+    end
+
+    if trust_votes["A#{row_num}"].present?
+      trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
+Rails.logger.info("DBG: #{trust_votes["C#{row_num}"]} #{params[:vote][:vote_verify_level]}")
+      trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
+Rails.logger.info("DBG: #{trust_votes["D#{row_num}"]} #{params[:vote][:vote_trust_level]}")
+      trust_votes.save
+Rails.logger.info("DBG: #{trust_votes.rows.inspect}")
+    end
+
     redirect_to user_trust_votes_path
   end
   
   private
 
-  def set_user_doc
-    @user_doc = user_session.spreadsheet_by_title(Settings.google.user.main_doc)
-    @user_trust_votes = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net)
-  end
-  
-  def set_trust_vote
-    idhash = params[:id]
-
-    return if idhash.blank?
-
-    @trust_vote_row_num = 1
-    @user_trust_votes.rows.each do |row|
-      if idhash == row[0]
-        @trust_vote = { :idhash => idhash, :doc_key => row[1], :verify_level => row[2].to_f, :trust_level => row[3].to_f }
-        break
-      elsif row[0].blank?
-        break
-      end
-      @trust_vote_row_num += 1
-    end
+  def set_user_data
+    @idhash = session[:idhash]
+    @doc_key = session[:doc_key]
   end
 end

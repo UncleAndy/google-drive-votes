@@ -5,15 +5,15 @@
   %span.input-group-addon
     = I18n.t("user_info_page.idhash")
   - input_style = "text-align: center;"
-  - if !@user_doc
+  - if !@doc_key
     - input_style = "#{input_style}background-color: red;"
-  %input.form-control{ :value => @user_idhash, :readonly => true, :style => input_style }
+  %input.form-control{ :value => @idhash, :readonly => true, :style => input_style }
   %span.input-group-addon
     = I18n.t("user_info_page.idhash")
 %p.input-group
   %span.input-group-addon
     = I18n.t("user_info_page.doc_key")
-  %input.form-control{ :value => (@user_doc ? @user_doc.key : nil), :readonly => true, :style => 'text-align: center;' }
+  %input.form-control{ :value => @doc_key, :readonly => true, :style => 'text-align: center;' }
   %span.input-group-addon
     = I18n.t("user_info_page.doc_key")
 %br
@@ -47,4 +47,6 @@
 %br
 %p{ :align => 'center' }
   = link_to :back do
-    %button.btn.btn-primary= "Назад"
+    %button.btn.btn-default
+      %span.glyphicon.glyphicon-backward
+      = "На предыдущую страницу"

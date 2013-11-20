@@ -4,13 +4,13 @@
 %p.input-group
   %span.input-group-addon
     = I18n.t("your.idhash")
-  %input.form-control{ :value => @user_idhash, :readonly => true, :style => 'text-align: center;' }
+  %input.form-control{ :value => @idhash, :readonly => true, :style => 'text-align: center;' }
   %span.input-group-addon
     = I18n.t("your.idhash")
 %p.input-group
   %span.input-group-addon
     = I18n.t("your.doc_key")
-  %input.form-control{ :value => @user_doc.key, :readonly => true, :style => 'text-align: center;' }
+  %input.form-control{ :value => @doc_key, :readonly => true, :style => 'text-align: center;' }
   %span.input-group-addon
     = I18n.t("your.doc_key")
 %br

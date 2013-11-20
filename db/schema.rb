@@ -11,6 +11,57 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 0) do
+ActiveRecord::Schema.define(:version => 20131118174045) do
+
+  create_table "trust_net_members", :force => true do |t|
+    t.string   "idhash",     :limit => 64, :null => false
+    t.string   "doc_key",    :limit => 64, :null => false
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+  end
+
+  add_index "trust_net_members", ["idhash", "doc_key"], :name => "index_trust_net_members_on_idhash_and_doc_key"
+
+  create_table "trust_net_results", :force => true do |t|
+    t.string   "idhash",       :limit => 64, :null => false
+    t.string   "doc_key",      :limit => 64, :null => false
+    t.float    "verify_level",               :null => false
+    t.float    "trust_level",                :null => false
+    t.integer  "votes_count",                :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+  end
+
+  add_index "trust_net_results", ["idhash", "doc_key"], :name => "index_trust_net_results_on_idhash_and_doc_key"
+  add_index "trust_net_results", ["verify_level", "votes_count"], :name => "index_trust_net_results_on_verify_level_and_votes_count"
+
+  create_table "user_options", :force => true do |t|
+    t.string   "idhash",        :limit => 64, :null => false
+    t.string   "emails"
+    t.string   "skype"
+    t.string   "icq"
+    t.string   "jabber"
+    t.string   "phones"
+    t.string   "facebook"
+    t.string   "vk"
+    t.string   "odnoklassniki"
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
+  end
+
+  add_index "user_options", ["idhash"], :name => "index_user_options_on_idhash"
+
+  create_table "user_trust_net_votes", :force => true do |t|
+    t.string   "idhash",            :limit => 64, :null => false
+    t.string   "vote_idhash",       :limit => 64, :null => false
+    t.string   "vote_doc_key",      :limit => 64, :null => false
+    t.integer  "vote_verify_level",               :null => false
+    t.integer  "vote_trust_level",                :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
+  end
+
+  add_index "user_trust_net_votes", ["idhash"], :name => "index_user_trust_net_votes_on_idhash"
+  add_index "user_trust_net_votes", ["vote_idhash", "vote_doc_key"], :name => "index_user_trust_net_votes_on_vote_idhash_and_vote_doc_key"
 
 end

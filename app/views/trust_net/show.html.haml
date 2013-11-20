@@ -5,14 +5,11 @@
   %tr
     %td.right{:width => '50%'}= I18n.t("trust_net.itaration_count")
     %td
-      %input.form-control{ :value => @itaration_count, :readonly => true, :style => 'text-align: center;' }
+      %input.form-control{ :value => Settings.trust_net_options.itaration_count, :readonly => true, :style => 'text-align: center;' }
   %tr
     %td.right{:width => '50%'}= I18n.t("trust_net.average_limit")
     %td
-      %input.form-control{ :value => @average_limit, :readonly => true, :style => 'text-align: center;' }
-%p{ :align => 'center' }
-  = link_to members_trust_net_path do
-    %button.btn.btn-primary.btn-lg= I18n.t("titles.trust_net_members")
+      %input.form-control{ :value => Settings.trust_net_options.average_limit, :readonly => true, :style => 'text-align: center;' }
 %br
 %table.table.table-bordered.table-hover.table-condensed
   %tr
@@ -59,14 +56,17 @@
   - @results.each do |row|
     %tr
       %td
-        = link_to info_user_path(:idhash => row[0]) do
-          = row[0]
+        = link_to info_user_path(:idhash => row.idhash) do
+          = row.idhash
       %td.center
-        = link_to "http://spreadsheets.google.com/ccc?key=#{row[1]}", :target => '_blank' do
-          = row[1]
+        = link_to "http://spreadsheets.google.com/ccc?key=#{row.doc_key}", :target => '_blank' do
+          = row.doc_key
       %td.center
-        = row[2]
+        = row.verify_level
       %td.center
-        = row[3]
+        = row.trust_level
       %td.center
-        = row[4]
+        = row.votes_count
+%p{ :align => 'center' }
+  = link_to members_trust_net_path do
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.trust_net_members")

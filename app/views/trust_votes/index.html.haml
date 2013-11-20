@@ -19,19 +19,19 @@
       = I18n.t('user_trust_net.trust_level')
     %th.center.col-sm-2
       = I18n.t('actions')
-  - @user_trust_votes.rows.each do |row|
+  - @user_trust_votes.each do |vote|
     %tr
       %td
-        = link_to info_user_path(:idhash => row[0]) do
-          = row[0]
+        = link_to info_user_path(:idhash => vote.vote_idhash) do
+          = spaced_str(vote.vote_idhash)
       %td.center
-        = link_to "http://spreadsheets.google.com/ccc?key=#{row[1]}", :target => '_blank' do
-          = row[1]
+        = link_to "http://spreadsheets.google.com/ccc?key=#{vote.vote_doc_key}", :target => '_blank' do
+          = spaced_str(vote.vote_doc_key)
       %td.center
-        = row[2]
+        = vote.vote_verify_level
       %td.center
-        = row[3]
+        = vote.vote_trust_level
       %td.center
-        = link_to edit_user_trust_vote_path(row[0]) do
+        = link_to edit_user_trust_vote_path(vote.vote_idhash) do
           %button.btn.btn-primary.btn-xs
             = I18n.t('edit')

@@ -3,37 +3,37 @@ class TrustNetController < ApplicationController
   
   def show
     if @sort == 'verify'
-      @results = @trust_net_results.rows.sort { |x,y| y[2].to_f <=> x[2].to_f }
+      @results = TrustNetResult.order('verify_level desc')
     elsif @sort == 'verify_desc'
-      @results = @trust_net_results.rows.sort { |x,y| x[2].to_f <=> y[2].to_f }
+      @results = TrustNetResult.order('verify_level')
     elsif @sort == 'trust'
-      @results = @trust_net_results.rows.sort { |x,y| y[3].to_f <=> x[3].to_f }
+      @results = TrustNetResult.order('trust_level desc')
     elsif @sort == 'trust_desc'
-      @results = @trust_net_results.rows.sort { |x,y| x[3].to_f <=> y[3].to_f }
+      @results = TrustNetResult.order('trust_level')
     elsif @sort == 'count'
-      @results = @trust_net_results.rows.sort { |x,y| y[4].to_f <=> x[4].to_f }
+      @results = TrustNetResult.order('votes_count desc')
     elsif @sort == 'count_desc'
-      @results = @trust_net_results.rows.sort { |x,y| x[4].to_f <=> y[4].to_f }
+      @results = TrustNetResult.order('votes_count')
     else
-      @results = @trust_net_results.rows.sort { |x,y| y[2].to_f <=> x[2].to_f }
+      @results = TrustNetResult.order('verify_level desc')
     end
     
     respond_to do |format|
       format.html
-      format.xml { render :xml => @trust_net_results.rows.to_xml }
-      format.js { render :json => @trust_net_results.rows.to_json }
-      format.json { render :json => @trust_net_results.rows.to_json }
+      format.xml { render :xml => @results.to_xml }
+      format.js { render :json => @results.to_json }
+      format.json { render :json => @results.to_json }
     end
   end
 
   def members
-    @members = @trust_net_members.rows
+    @members = TrustNetMember.all
     
     respond_to do |format|
       format.html
-      format.xml { render :xml => @members.rows.to_xml }
-      format.js { render :json => @members.rows.to_json }
-      format.json { render :json => @members.rows.to_json }
+      format.xml { render :xml => @members.to_xml }
+      format.js { render :json => @members.to_json }
+      format.json { render :json => @members.to_json }
     end
   end
   
