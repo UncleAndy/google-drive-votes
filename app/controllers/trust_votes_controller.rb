@@ -76,11 +76,8 @@ class TrustVotesController < ApplicationController
 
     if trust_votes["A#{row_num}"].present?
       trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
-Rails.logger.info("DBG: #{trust_votes["C#{row_num}"]} #{params[:vote][:vote_verify_level]}")
       trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
-Rails.logger.info("DBG: #{trust_votes["D#{row_num}"]} #{params[:vote][:vote_trust_level]}")
       trust_votes.save
-Rails.logger.info("DBG: #{trust_votes.rows.inspect}")
     end
 
     redirect_to user_trust_votes_path

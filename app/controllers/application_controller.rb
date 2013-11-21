@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   rescue_from GoogleDrive::AuthenticationError, :with => :user_google_session_reopen
+  rescue_from OAuth2::Error, :with => :user_google_session_reopen
   
   before_filter :gon_init
   
