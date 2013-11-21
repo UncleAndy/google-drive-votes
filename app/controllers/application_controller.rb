@@ -15,9 +15,6 @@ require 'yaml'
 
 class ApplicationController < ActionController::Base
   protect_from_forgery
-
-  rescue_from GoogleDrive::AuthenticationError, :with => :user_google_session_reopen
-  rescue_from OAuth2::Error, :with => :user_google_session_reopen
   
   before_filter :gon_init
   
@@ -33,6 +30,37 @@ class ApplicationController < ActionController::Base
     res
   end
   helper_method :spaced_str
+
+  def google_action
+    counter = 5
+    while counter >= 0 do
+      counter -= 1
+      begin
+        yield
+        break
+      rescue GoogleDrive::AuthenticationError
+        GoogleUserDoc.creal_all_singletons
+        refresh_token
+      rescue OAuth2::Error
+        GoogleUserDoc.creal_all_singletons
+        refresh_token
+      end
+    end
+  end
+
+  def refresh_token
+    refresh_client_obj = OAuth2::Client.new(Settings.oauth2.client_id, Settings.oauth2.client_secret,
+      :site => "https://accounts.google.com",
+      :token_url => "/o/oauth2/token",
+      :authorize_url => "/o/oauth2/auth")
+    refresh_access_token_obj = OAuth2::AccessToken.new(refresh_client_obj,
+                                                       session[:auth_token],
+                                                       {refresh_token: session[:refresh_token]})
+    refresh_access_token_obj.refresh!
+    session[:auth_token] = refresh_access_token_obj.token
+    refresh_token = refresh_access_token_obj.refresh_token
+    session[:refresh_token] = refresh_token if refresh_token.present?
+  end
   
   private
 
@@ -43,14 +71,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def user_google_session_reopen(exception)
-    Rails.logger.error "user_google_session_reopen: Exception #{exception.class}: #{exception.to_s}"
-    Rails.logger.error "user_google_session_reopen: Trace: #{exception.backtrace.join("\n")}"
-    
-    session[:auth_token] = nil
-    login_required
-  end
-  
   def gon_init
     gon.is_ok = true
   end

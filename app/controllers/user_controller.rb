@@ -19,10 +19,12 @@ class UserController < ApplicationController
     if idhash.present? && session[:auth_token].present?
       session[:idhash] = idhash
 
-      GoogleUserDoc.init(session)
-      user_info = GoogleUserDoc.doc_info_page
-      user_info["B1"] = idhash
-      user_info.save
+      google_action do
+        GoogleUserDoc.init(session)
+        user_info = GoogleUserDoc.doc_info_page
+        user_info["B1"] = idhash
+        user_info.save
+      end
 
       # Регистрация в сети доверия (только в БД)
       if user_info["B1"] == idhash
@@ -40,17 +42,19 @@ class UserController < ApplicationController
     user = UserOption.find_or_create_by_idhash(session[:idhash])
     user.update_attributes(params[:user])
     
-    GoogleUserDoc.init(session)
-    user_info = GoogleUserDoc.doc_info_page
-    user_info["B3"] = params[:user][:emails]
-    user_info["B4"] = params[:user][:skype]
-    user_info["B5"] = params[:user][:icq]
-    user_info["B6"] = params[:user][:jabber]
-    user_info["B7"] = params[:user][:phones]
-    user_info["B8"] = params[:user][:facebook]
-    user_info["B9"] = params[:user][:vk]
-    user_info["B10"] = params[:user][:odnoklassniki]
-    user_info.save
+    google_action do
+      GoogleUserDoc.init(session)
+      user_info = GoogleUserDoc.doc_info_page
+      user_info["B3"] = params[:user][:emails]
+      user_info["B4"] = params[:user][:skype]
+      user_info["B5"] = params[:user][:icq]
+      user_info["B6"] = params[:user][:jabber]
+      user_info["B7"] = params[:user][:phones]
+      user_info["B8"] = params[:user][:facebook]
+      user_info["B9"] = params[:user][:vk]
+      user_info["B10"] = params[:user][:odnoklassniki]
+      user_info.save
+    end
     redirect_to user_path
   end
   
@@ -74,10 +78,12 @@ class UserController < ApplicationController
     # Ищем юзера в составе участников сети доверия
 
     if @user_doc_key.present?
-      GoogleUserDoc.init(session)
-      @user_doc = GoogleUserDoc.user_google_session.spreadsheet_by_key(@user_doc_key)
-      @user_info = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
-      @user_idhash = @user_info["B1"] if @user_info
+      google_action do
+        GoogleUserDoc.init(session)
+        @user_doc = GoogleUserDoc.user_google_session.spreadsheet_by_key(@user_doc_key)
+        @user_info = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
+        @user_idhash = @user_info["B1"] if @user_info
+      end
     end
   end
 end

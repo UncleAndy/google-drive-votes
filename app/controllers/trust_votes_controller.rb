@@ -21,19 +21,22 @@ class TrustVotesController < ApplicationController
     elsif founded_doc_key
       flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
     else
-      GoogleUserDoc.init(session)
-      trust_votes = GoogleUserDoc.doc_trust_votes_page
-      # Находим последнюю свободную строку в документе и в нее прописываем новый голос
-      row_num = 1
-      while trust_votes["A#{row_num}"].present?
-        row_num += 1
-      end
+      trust_votes = nil
+      google_action do
+        GoogleUserDoc.init(session)
+        trust_votes = GoogleUserDoc.doc_trust_votes_page
+        # Находим последнюю свободную строку в документе и в нее прописываем новый голос
+        row_num = 1
+        while trust_votes["A#{row_num}"].present?
+          row_num += 1
+        end
 
-      trust_votes["A#{row_num}"] = params[:vote][:vote_idhash]
-      trust_votes["B#{row_num}"] = params[:vote][:vote_doc_key]
-      trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
-      trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
-      trust_votes.save
+        trust_votes["A#{row_num}"] = params[:vote][:vote_idhash]
+        trust_votes["B#{row_num}"] = params[:vote][:vote_doc_key]
+        trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
+        trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
+        trust_votes.save
+      end
 
       if trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
         UserTrustNetVote.create({
@@ -65,19 +68,21 @@ class TrustVotesController < ApplicationController
     @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
     @vote.update_attributes(params[:vote]) if @vote
 
-    GoogleUserDoc.init(session)
-    trust_votes = GoogleUserDoc.doc_trust_votes_page
-    # Находим строку с данным голосом и прописываем его изменение
-    row_num = 1
-    while trust_votes["A#{row_num}"].present? &&
-          trust_votes["A#{row_num}"] != params[:id]
-      row_num += 1
-    end
+    google_action do
+      GoogleUserDoc.init(session)
+      trust_votes = GoogleUserDoc.doc_trust_votes_page
+      # Находим строку с данным голосом и прописываем его изменение
+      row_num = 1
+      while trust_votes["A#{row_num}"].present? &&
+            trust_votes["A#{row_num}"] != params[:id]
+        row_num += 1
+      end
 
-    if trust_votes["A#{row_num}"].present?
-      trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
-      trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
-      trust_votes.save
+      if trust_votes["A#{row_num}"].present?
+        trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
+        trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
+        trust_votes.save
+      end
     end
 
     redirect_to user_trust_votes_path

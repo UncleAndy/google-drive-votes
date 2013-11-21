@@ -5,6 +5,8 @@ class AuthController < ApplicationController
   def show
     @auth_url = @client.auth_code.authorize_url(
       :redirect_uri => Settings.oauth2.redirect_url,
+      :access_type => "offline",
+      :approval_prompt => 'force',
       :scope =>
         "https://docs.google.com/feeds/ " +
         "https://docs.googleusercontent.com/ " +
@@ -15,7 +17,10 @@ class AuthController < ApplicationController
   def login
     auth_token = @client.auth_code.get_token(params[:code], :redirect_uri => Settings.oauth2.redirect_url)
     session[:auth_token] = auth_token.token
-
+    session[:refresh_token] = auth_token.refresh_token
+    Rails.logger.info("AUTH: Auth token #{session[:auth_token]}")
+    Rails.logger.info("AUTH: Refresh token #{session[:refresh_token]}")
+    
     # Открываем документ пользователя и запоминаем в сессии его idhash
     user_doc, user_info, user_trust_votes, user_votes = set_idhash(auth_token.token)
     sync_data(session[:idhash], user_doc, user_info, user_trust_votes, user_votes)
