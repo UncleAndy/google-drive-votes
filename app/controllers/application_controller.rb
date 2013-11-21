@@ -43,7 +43,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def user_google_session_reopen
+  def user_google_session_reopen(exception)
+    Rails.logger.error "user_google_session_reopen: Exception #{exception.class}: #{exception.to_s}"
+    Rails.logger.error "user_google_session_reopen: Trace: #{exception.backtrace.join("\n")}"
+    
     session[:auth_token] = nil
     login_required
   end
