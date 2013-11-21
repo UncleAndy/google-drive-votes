@@ -94,9 +94,14 @@ class AuthController < ApplicationController
 
   # Синхронизация данных в БД с документом
   def sync_data(idhash, user_doc, user_info, user_trust_votes, user_votes)
-    return if idhash.blank?
     user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info) if !user_info
     user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net) if !user_trust_votes
+
+    if idhash.blank?
+      idhash = user_info["B1"] if user_info.present?
+      session[:idhash] = idhash if idhash.present?
+    end
+    return if idhash.blank?
 
     # Настройки пользователя
     user = UserOption.find_or_create_by_idhash(idhash)
