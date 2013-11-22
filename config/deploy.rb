@@ -17,6 +17,14 @@ set :project_name, 'google_trust_net'
 
 set :deploy_to, "/home/deployer/projects/#{ project_name }"
 
+def run_remote_rake(rake_cmd)
+  rake_args = ENV['RAKE_ARGS'].to_s.split(',')
+  cmd = "cd #{fetch(:latest_release)} && #{fetch(:rake, "rake")} RAILS_ENV=#{fetch(:rails_env, "production")} #{rake_cmd}"
+  cmd += "['#{rake_args.join("','")}']" unless rake_args.empty?
+  run cmd
+  set :rakefile, nil if exists?(:rakefile)
+end
+
 desc "Restart of Unicorn"
 task :restart, :except => { :no_release => true } do
   run "kill -s QUIT `cat /home/deployer/projects/#{ project_name }/shared/pids/unicorn.pid`"
@@ -41,5 +49,15 @@ namespace :deploy do
   task :symlink_db, :roles => :app do
     run "ln -nfs #{deploy_to}/shared/config/database.yml #{release_path}/config/database.yml"
     run "ln -nfs #{deploy_to}/shared/config/google.yml #{release_path}/config/google.yml"
+  end
+
+  desc "Restart Resque Workers"
+  task :restart_workers, :roles => :db do
+    run_remote_rake "resque:restart_workers"
+  end
+
+  desc "Restart Resque scheduler"
+  task :restart_scheduler, :roles => :db do
+    run_remote_rake "resque:restart_scheduler"
   end
 end
