@@ -17,5 +17,5 @@ google:
       options: "Настройки"
       results: "Сводные результаты"
 trust_net_options:
-  itaration_count: 5
+  iteration_count: 5
   average_limit: 10

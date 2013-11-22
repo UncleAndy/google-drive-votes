@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131121080821) do
+ActiveRecord::Schema.define(:version => 20131122160042) do
 
   create_table "trust_net_members", :force => true do |t|
     t.string   "idhash",     :limit => 64, :null => false
@@ -22,6 +22,12 @@ ActiveRecord::Schema.define(:version => 20131121080821) do
 
   add_index "trust_net_members", ["idhash", "doc_key"], :name => "index_trust_net_members_on_idhash_and_doc_key", :unique => true
 
+  create_table "trust_net_result_histories", :force => true do |t|
+    t.datetime "result_time", :null => false
+  end
+
+  add_index "trust_net_result_histories", ["result_time"], :name => "index_trust_net_result_histories_on_result_time"
+
   create_table "trust_net_results", :force => true do |t|
     t.string   "idhash",       :limit => 64, :null => false
     t.string   "doc_key",      :limit => 64, :null => false
@@ -30,9 +36,12 @@ ActiveRecord::Schema.define(:version => 20131121080821) do
     t.integer  "votes_count",                :null => false
     t.datetime "created_at",                 :null => false
     t.datetime "updated_at",                 :null => false
+    t.datetime "result_time",                :null => false
   end
 
   add_index "trust_net_results", ["idhash", "doc_key"], :name => "index_trust_net_results_on_idhash_and_doc_key"
+  add_index "trust_net_results", ["result_time", "idhash", "doc_key"], :name => "index_trust_net_results_on_result_time_and_idhash_and_doc_key"
+  add_index "trust_net_results", ["result_time", "verify_level"], :name => "index_trust_net_results_on_result_time_and_verify_level"
   add_index "trust_net_results", ["verify_level", "votes_count"], :name => "index_trust_net_results_on_verify_level_and_votes_count"
 
   create_table "user_options", :force => true do |t|
