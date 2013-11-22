@@ -12,42 +12,44 @@ class TrustVotesController < ApplicationController
   end
   
   def create
-    # Сначала проверяем что уже нет строки с таким идентиикатором пользователя или документа
-    founded_idhash = UserTrustNetVote.find_by_vote_idhash(params[:vote][:idhash])
-    founded_doc_key = UserTrustNetVote.find_by_vote_doc_key(params[:vote][:doc_key])
+    if check_data
+      # Сначала проверяем что уже нет строки с таким идентификатором пользователя или документа
+      founded_idhash = UserTrustNetVote.find_by_vote_idhash(params[:vote][:vote_idhash])
+      founded_doc_key = UserTrustNetVote.find_by_vote_doc_key(params[:vote][:vote_doc_key])
 
-    if founded_idhash
-      flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
-    elsif founded_doc_key
-      flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
-    else
-      trust_votes = nil
-      google_action do
-        GoogleUserDoc.init(session)
-        trust_votes = GoogleUserDoc.doc_trust_votes_page
-        # Находим последнюю свободную строку в документе и в нее прописываем новый голос
-        row_num = 1
-        while trust_votes["A#{row_num}"].present?
-          row_num += 1
+      if founded_idhash
+        flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
+      elsif founded_doc_key
+        flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
+      else
+        trust_votes = nil
+        google_action do
+          GoogleUserDoc.init(session)
+          trust_votes = GoogleUserDoc.doc_trust_votes_page
+          # Находим последнюю свободную строку в документе и в нее прописываем новый голос
+          row_num = 1
+          while trust_votes["A#{row_num}"].present?
+            row_num += 1
+          end
+
+          trust_votes["A#{row_num}"] = params[:vote][:vote_idhash]
+          trust_votes["B#{row_num}"] = params[:vote][:vote_doc_key]
+          trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
+          trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
+          trust_votes.save
         end
 
-        trust_votes["A#{row_num}"] = params[:vote][:vote_idhash]
-        trust_votes["B#{row_num}"] = params[:vote][:vote_doc_key]
-        trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
-        trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
-        trust_votes.save
-      end
-
-      if trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
-        UserTrustNetVote.create({
-                                :idhash => @idhash,
-                                :vote_idhash => params[:vote][:vote_idhash],
-                                :vote_doc_key => params[:vote][:vote_doc_key],
-                                :vote_verify_level => params[:vote][:vote_verify_level],
-                                :vote_trust_level => params[:vote][:vote_trust_level]
-                                })
-      else
-        flash[:alert] = I18n.t("errors.google_save_error")
+        if trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
+          UserTrustNetVote.create({
+                                  :idhash => @idhash,
+                                  :vote_idhash => params[:vote][:vote_idhash],
+                                  :vote_doc_key => params[:vote][:vote_doc_key],
+                                  :vote_verify_level => params[:vote][:vote_verify_level],
+                                  :vote_trust_level => params[:vote][:vote_trust_level]
+                                  })
+        else
+          flash[:alert] = I18n.t("errors.google_save_error")
+        end
       end
     end
     redirect_to user_trust_votes_path
@@ -65,26 +67,27 @@ class TrustVotesController < ApplicationController
   end
 
   def update
-    @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
-    @vote.update_attributes(params[:vote]) if @vote
+    if check_data(true)
+      @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
+      @vote.update_attributes(params[:vote]) if @vote
 
-    google_action do
-      GoogleUserDoc.init(session)
-      trust_votes = GoogleUserDoc.doc_trust_votes_page
-      # Находим строку с данным голосом и прописываем его изменение
-      row_num = 1
-      while trust_votes["A#{row_num}"].present? &&
-            trust_votes["A#{row_num}"] != params[:id]
-        row_num += 1
-      end
+      google_action do
+        GoogleUserDoc.init(session)
+        trust_votes = GoogleUserDoc.doc_trust_votes_page
+        # Находим строку с данным голосом и прописываем его изменение
+        row_num = 1
+        while trust_votes["A#{row_num}"].present? &&
+              trust_votes["A#{row_num}"] != params[:id]
+          row_num += 1
+        end
 
-      if trust_votes["A#{row_num}"].present?
-        trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
-        trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
-        trust_votes.save
+        if trust_votes["A#{row_num}"].present?
+          trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
+          trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
+          trust_votes.save
+        end
       end
     end
-
     redirect_to user_trust_votes_path
   end
   
@@ -93,5 +96,23 @@ class TrustVotesController < ApplicationController
   def set_user_data
     @idhash = session[:idhash]
     @doc_key = session[:doc_key]
+  end
+
+  def check_data(without_ids = false)
+    if !without_ids && params[:vote][:vote_idhash] !~ /^[0-9a-fA-F]{64}$/
+      flash[:alert] = I18n.t('errors.idhash_bad_format')
+      false
+    elsif !without_ids && params[:vote][:vote_doc_key].blank?
+      flash[:alert] = I18n.t('errors.doc_key_cannot_be_blank')
+      false
+    elsif params[:vote][:vote_verify_level] !~ /^[0-9]+$/ || !(-10..10).include(params[:vote][:vote_verify_level].to_i)
+      flash[:alert] = I18n.t('errors.verify_level_bad_value')
+      false
+    elsif params[:vote][:vote_trust_level] !~ /^[0-9]+$/ || !(-10..10).include(params[:vote][:vote_trust_level].to_i)
+      flash[:alert] = I18n.t('errors.trust_level_bad_value')
+      false
+    else
+      true
+    end
   end
 end
