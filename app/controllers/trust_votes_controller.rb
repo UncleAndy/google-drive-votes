@@ -14,8 +14,8 @@ class TrustVotesController < ApplicationController
   def create
     if check_data
       # Сначала проверяем что уже нет строки с таким идентификатором пользователя или документа
-      founded_idhash = UserTrustNetVote.find_by_vote_idhash(params[:vote][:vote_idhash])
-      founded_doc_key = UserTrustNetVote.find_by_vote_doc_key(params[:vote][:vote_doc_key])
+      founded_idhash = UserTrustNetVote.find_by_idhash_and_vote_idhash(session[:idhash], params[:vote][:vote_idhash])
+      founded_doc_key = UserTrustNetVote.find_by_idhash_and_vote_doc_key(session[:idhash], params[:vote][:vote_doc_key])
 
       if founded_idhash
         flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
