@@ -65,7 +65,7 @@ class ApplicationController < ActionController::Base
   private
 
   def login_required
-    if !session[:auth_token].present?
+    if !session[:auth_token].present? || !session[:refresh_token].present?
       session[:site_return_url] = request.env['REQUEST_URI']
       redirect_to auth_path
     end
