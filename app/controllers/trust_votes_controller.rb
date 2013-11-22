@@ -23,11 +23,11 @@ class TrustVotesController < ApplicationController
         flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
       else
         trust_votes = nil
+        row_num = 1
         google_action do
           GoogleUserDoc.init(session)
           trust_votes = GoogleUserDoc.doc_trust_votes_page
           # Находим последнюю свободную строку в документе и в нее прописываем новый голос
-          row_num = 1
           while trust_votes["A#{row_num}"].present?
             row_num += 1
           end
@@ -39,7 +39,7 @@ class TrustVotesController < ApplicationController
           trust_votes.save
         end
 
-        if trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
+        if trust_votes && trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
           UserTrustNetVote.create({
                                   :idhash => @idhash,
                                   :vote_idhash => params[:vote][:vote_idhash],
