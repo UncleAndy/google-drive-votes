@@ -38,20 +38,24 @@ class AuthController < ApplicationController
   end
 
   def set_idhash(token)
+    google_session = nil
     user_doc = nil
     user_info = nil
     user_trust_votes = nil
     user_votes = nil
     if token.present?
-      google_session = GoogleUserDoc.user_google_session(token)
-      redirect_to auth_path if !google_session
-      Rails.logger.info("DBG: user doc title '#{Settings.google.user.main_doc}'")
-      collection = google_session.collection_by_title(Settings.google.user.collection)
-      user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[0] if collection
+      google_action do
+        google_session = GoogleUserDoc.user_google_session(token)
+        Rails.logger.info("DBG: user doc title '#{Settings.google.user.main_doc}'")
+        collection = google_session.collection_by_title(Settings.google.user.collection)
+        user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[0] if collection
+      end
       if user_doc
-        user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
-        session[:idhash] = user_info["B1"] if user_info
-        session[:doc_key] = user_doc.key
+        google_action do
+          user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
+          session[:idhash] = user_info["B1"] if user_info
+          session[:doc_key] = user_doc.key
+        end
       else
         user_doc, user_info, user_trust_votes, user_votes = create_user_doc(google_session)
         session[:doc_key] = user_doc.key if user_doc
@@ -61,82 +65,89 @@ class AuthController < ApplicationController
   end
 
   def create_user_doc(google_session)
+    user_doc = nil
     user_info = nil
+    user_trust_votes = nil
+    user_votes = nil
     
-    collection = google_session.collection_by_title(Settings.google.user.collection)
-    collection = google_session.root_collection.create_subcollection(Settings.google.user.collection) if !collection
+    google_action do
+      collection = google_session.collection_by_title(Settings.google.user.collection)
+      collection = google_session.root_collection.create_subcollection(Settings.google.user.collection) if !collection
 
-    user_doc = google_session.create_spreadsheet(Settings.google.user.main_doc)
-    if user_doc
-      collection.add(user_doc) if collection
+      user_doc = google_session.create_spreadsheet(Settings.google.user.main_doc)
+      if user_doc
+        collection.add(user_doc) if collection
 
-      user_doc.acl.push({:scope_type => "default", :role => "reader"})
+        user_doc.acl.push({:scope_type => "default", :role => "reader"})
 
-      # Страница info
-      user_info = user_doc.worksheets()[0]
-      user_info.title = Settings.google.user.main_doc_pages.user_info
-      user_info.max_rows = 1000
-      user_info.max_cols = 3
-      user_info["A1"] = I18n.t("user_info.idhash")
-      user_info["A3"] = I18n.t("simple_form.labels.defaults.emails")
-      user_info["A4"] = I18n.t("simple_form.labels.defaults.skype")
-      user_info["A5"] = I18n.t("simple_form.labels.defaults.icq")
-      user_info["A6"] = I18n.t("simple_form.labels.defaults.jabber")
-      user_info["A7"] = I18n.t("simple_form.labels.defaults.phones")
-      user_info["A8"] = I18n.t("simple_form.labels.defaults.facebook")
-      user_info["A9"] = I18n.t("simple_form.labels.defaults.vk")
-      user_info["A10"] = I18n.t("simple_form.labels.defaults.odnoklassniki")
-      user_info.save
+        # Страница info
+        user_info = user_doc.worksheets()[0]
+        user_info.title = Settings.google.user.main_doc_pages.user_info
+        user_info.max_rows = 1000
+        user_info.max_cols = 3
+        user_info["A1"] = I18n.t("user_info.idhash")
+        user_info["A3"] = I18n.t("simple_form.labels.defaults.emails")
+        user_info["A4"] = I18n.t("simple_form.labels.defaults.skype")
+        user_info["A5"] = I18n.t("simple_form.labels.defaults.icq")
+        user_info["A6"] = I18n.t("simple_form.labels.defaults.jabber")
+        user_info["A7"] = I18n.t("simple_form.labels.defaults.phones")
+        user_info["A8"] = I18n.t("simple_form.labels.defaults.facebook")
+        user_info["A9"] = I18n.t("simple_form.labels.defaults.vk")
+        user_info["A10"] = I18n.t("simple_form.labels.defaults.odnoklassniki")
+        user_info.save
 
-      # Страница голосов в сети доверия (idhash, main_doc_url_key, verify_level, trust_level)
-      user_trust_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.trust_net, 1000, 4)
+        # Страница голосов в сети доверия (idhash, main_doc_url_key, verify_level, trust_level)
+        user_trust_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.trust_net, 1000, 4)
 
-      # Страница голосов в голосованиях (vote_doc_url_key, user_vote_doc_url_key)
-      user_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.votes, 50000, 2)
+        # Страница голосов в голосованиях (vote_doc_url_key, user_vote_doc_url_key)
+        user_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.votes, 50000, 2)
+      end
     end
     [user_doc, user_info, user_trust_votes, user_votes]
   end
 
   # Синхронизация данных в БД с документом
   def sync_data(idhash, user_doc, user_info, user_trust_votes, user_votes)
-    user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info) if !user_info
-    user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net) if !user_trust_votes
+    google_action do
+      user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info) if !user_info
+      user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net) if !user_trust_votes
 
-    if idhash.blank?
-      idhash = user_info["B1"] if user_info.present?
-      session[:idhash] = idhash if idhash.present?
-    end
-    return if idhash.blank?
-
-    # Настройки пользователя
-    user = UserOption.find_or_create_by_idhash(idhash)
-    user.update_attributes({
-                            :emails => user_info["B3"],
-                            :skype => user_info["B4"],
-                            :icq => user_info["B5"],
-                            :jabber => user_info["B6"],
-                            :phones => user_info["B7"],
-                            :facebook => user_info["B8"],
-                            :vk => user_info["B9"],
-                            :odnoklassniki => user_info["B10"]
-                            })
-
-    # Голоса в сети доверия (добавляем отсутствующие)
-    user_trust_votes.rows.each do |row|
-      next if row[0].blank? || row[1].blank? || row[2].blank? || row[3].blank?
-      vote = UserTrustNetVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(idhash, row[0], row[1])
-      if vote
-        vote.update_attributes({:vote_verify_level => row[2], :vote_trust_level => row[3]}) if vote.vote_verify_level != row[2].to_i || vote.vote_trust_level != row[3].to_i
-      else
-        UserTrustNetVote.create({:idhash => idhash, :vote_idhash => row[0], :vote_doc_key => row[1], :vote_verify_level => row[2], :vote_trust_level => row[3]})
+      if idhash.blank?
+        idhash = user_info["B1"] if user_info.present?
+        session[:idhash] = idhash if idhash.present?
       end
-    end
+      return if idhash.blank?
 
-    # Проверяем регистрацию пользователя в сети доверия
-    member = TrustNetMember.find_by_idhash(idhash)
-    if !member
-      doc_member = TrustNetMember.find_by_doc_key(user_doc.key)
-      TrustNetMember.create({:idhash => idhash, :doc_key => user_doc.key}) if !doc_member
+      # Настройки пользователя
+      user = UserOption.find_or_create_by_idhash(idhash)
+      user.update_attributes({
+                              :emails => user_info["B3"],
+                              :skype => user_info["B4"],
+                              :icq => user_info["B5"],
+                              :jabber => user_info["B6"],
+                              :phones => user_info["B7"],
+                              :facebook => user_info["B8"],
+                              :vk => user_info["B9"],
+                              :odnoklassniki => user_info["B10"]
+                              })
+
+      # Голоса в сети доверия (добавляем отсутствующие)
+      user_trust_votes.rows.each do |row|
+        next if row[0].blank? || row[1].blank? || row[2].blank? || row[3].blank?
+        vote = UserTrustNetVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(idhash, row[0], row[1])
+        if vote
+          vote.update_attributes({:vote_verify_level => row[2], :vote_trust_level => row[3]}) if vote.vote_verify_level != row[2].to_i || vote.vote_trust_level != row[3].to_i
+        else
+          UserTrustNetVote.create({:idhash => idhash, :vote_idhash => row[0], :vote_doc_key => row[1], :vote_verify_level => row[2], :vote_trust_level => row[3]})
+        end
+      end
+
+      # Проверяем регистрацию пользователя в сети доверия
+      member = TrustNetMember.find_by_idhash(idhash)
+      if !member
+        doc_member = TrustNetMember.find_by_doc_key(user_doc.key)
+        TrustNetMember.create({:idhash => idhash, :doc_key => user_doc.key}) if !doc_member
+      end
     end
   end
 end
