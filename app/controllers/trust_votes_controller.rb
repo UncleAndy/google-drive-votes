@@ -105,10 +105,10 @@ class TrustVotesController < ApplicationController
     elsif !without_ids && params[:vote][:vote_doc_key].blank?
       flash[:alert] = I18n.t('errors.doc_key_cannot_be_blank')
       false
-    elsif params[:vote][:vote_verify_level] !~ /^[0-9]+$/ || !(-10..10).include(params[:vote][:vote_verify_level].to_i)
+    elsif params[:vote][:vote_verify_level] !~ /^[0-9]+$/ || !(-10..10).include?(params[:vote][:vote_verify_level].to_i)
       flash[:alert] = I18n.t('errors.verify_level_bad_value')
       false
-    elsif params[:vote][:vote_trust_level] !~ /^[0-9]+$/ || !(-10..10).include(params[:vote][:vote_trust_level].to_i)
+    elsif params[:vote][:vote_trust_level] !~ /^[0-9]+$/ || !(-10..10).include?(params[:vote][:vote_trust_level].to_i)
       flash[:alert] = I18n.t('errors.trust_level_bad_value')
       false
     else
