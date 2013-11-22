@@ -24,14 +24,14 @@ class UserController < ApplicationController
         user_info = GoogleUserDoc.doc_info_page
         user_info["B1"] = idhash
         user_info.save
-      end
 
-      # Регистрация в сети доверия (только в БД)
-      if user_info["B1"] == idhash
-        rec = TrustNetMember.register(idhash, GoogleUserDoc.user_doc.key)
-        if rec.errors.present?
-          flash[:alert] = rec.errors.full_messages.join(', ')
-          redirect_to :back and return
+        # Регистрация в сети доверия (только в БД)
+        if user_info["B1"] == idhash
+          rec = TrustNetMember.register(idhash, GoogleUserDoc.user_doc.key)
+          if rec.errors.present?
+            flash[:alert] = rec.errors.full_messages.join(', ')
+            redirect_to :back and return
+          end
         end
       end
     end
