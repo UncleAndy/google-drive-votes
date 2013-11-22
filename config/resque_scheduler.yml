@@ -1,0 +1,6 @@
+trust_net_calc_result:
+  cron: '1 * * * * *'
+  class: 'Jobs::TrustNetCalcResult'
+  queue: trust_net_culc_result
+  args:
+  description: Считаем результаты сети доверия

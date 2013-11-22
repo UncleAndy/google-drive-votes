@@ -1,0 +1,3 @@
+resque_scheduler: cd /home/deployer/projects/google_trust_net/current && env RAILS_ENV=production bundle exec rake resque:scheduler
+
+trust_net_culc_result: cd /home/deployer/projects/google_trust_net/current && env RAILS_ENV=production bundle exec rake resque:work QUEUE=trust_net_culc_result

@@ -17,6 +17,7 @@ gem 'pg'
 gem 'simple_form'
 gem 'rails_config'
 gem 'google_drive'
+gem 'resque-scheduler', :require => 'resque_scheduler'
 group :development do
   gem 'capistrano', '2.9.0'
   gem 'html2haml'
