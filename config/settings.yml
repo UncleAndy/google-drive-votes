@@ -18,7 +18,7 @@ google:
       results: "Сводные результаты"
 trust_net_options:
   iteration_count: 5
-  average_limit: 10
+  average_limit: 3
 
 redis_for_resque:
   host: 127.0.0.1
