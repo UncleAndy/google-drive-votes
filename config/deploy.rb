@@ -30,6 +30,8 @@ task :restart, :except => { :no_release => true } do
   run "kill -s QUIT `cat /home/deployer/projects/#{ project_name }/shared/pids/unicorn.pid`"
   run "sleep 3"
   run "cd #{current_path} ; bundle exec unicorn_rails -D -E production -c config/unicorn.rb"
+  run_remote_rake "resque:restart_workers"
+  run_remote_rake "resque:restart_scheduler"
 end
 
 desc "Start unicorn"
