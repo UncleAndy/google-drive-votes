@@ -21,11 +21,15 @@ class ApplicationController < ActionController::Base
   def spaced_str(idhash)
     res = ''
     sep = ''
-    (idhash.size / 16).times do |idx|
-      start = idx*16
-      fin = start+16-1
-      res = "#{res}#{sep}#{idhash[start..fin]}"
-      sep = ' '
+    if idhash.size > 16
+      (idhash.size / 16).times do |idx|
+        start = idx*16
+        fin = start+16-1
+        res = "#{res}#{sep}#{idhash[start..fin]}"
+        sep = ' '
+      end
+    else
+      res = idhash
     end
     res
   end
@@ -33,18 +37,29 @@ class ApplicationController < ActionController::Base
 
   def google_action
     counter = 5
+    success = false
     while counter >= 0 do
       counter -= 1
       begin
         yield
+        success = true
         break
       rescue GoogleDrive::AuthenticationError
+        Rails.logger.info("GoogleDrive::AuthenticationError: try refresh token")
         GoogleUserDoc.creal_all_singletons
         refresh_token
       rescue OAuth2::Error
+        Rails.logger.info("OAuth2::Error: try refresh token")
         GoogleUserDoc.creal_all_singletons
         refresh_token
       end
+    end
+    if !success
+      session[:site_return_url] = request.env['REQUEST_URI']
+      redirect_to auth_path
+      false
+    else
+      true
     end
   end
 

@@ -11,6 +11,11 @@ $( document ).ready(function() {
     return(true);
   });
 
+  $("#new_trust_vote_form").submit(function() {
+    $("#new_vote_idhash_field").val(calc_idhash());
+    return(true);
+  });
+
   $("#check_hash").click(function() {
     var idhash_field = $.trim($("#idhash").val()).toUpperCase()
     var idhash_calc = calc_idhash().toUpperCase()

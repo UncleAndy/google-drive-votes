@@ -5,11 +5,34 @@
   = link_to I18n.t("titles.user_cabinet"), user_path
   = "-"
   = link_to I18n.t("titles.user_trust_votes"), user_trust_votes_path
+
+.panel.panel-default
+  .panel-heading
+    Проверяемый человек
+  .panel-body
+    %p
+      Введите фамилию, имя, отчество и дату рождения проверяемого человека.
+      Эти данные не будут отправлятся на сервер или где-либо сохраняться.
+      Они будут использованы лишь для определения идентификатора проверяемого.
+    %p.center
+      %b
+        * Фамилия:
+      %input{ :type => 'text', :id => 'last_name'}
+      %b
+        * Имя:
+      %input{ :type => 'text', :id => 'first_name'}
+      %b
+        * Отчество:
+      %input{ :type => 'text', :id => 'middle_name'}
+    %p.center
+      %b
+        * Дата рождения (в виде ДД.ММ.ГГГГ с нулями, например "01.01.1990"):
+      %br
+      %input{ :type => 'text', :id => 'birth_date'}
   
-= simple_form_for :vote, :url => user_trust_votes_path, :method => :post, :html => {:autocomplete => "off"} do |f|
+= simple_form_for :vote, :url => user_trust_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_trust_vote_form' } do |f|
   .center
-    = f.input :vote_idhash, required: true
-    = link_to "проверка идентификатора пользователя", idhash_check_user_path, :target => "_blank"
+    = f.hidden_field :vote_idhash, id: 'new_vote_idhash_field', required: true
     = f.input :vote_doc_key, required: true
   %br
   .panel.panel-default
@@ -18,9 +41,9 @@
         Уровень верификации
     .panel-body.center
       %p
-        Своим голосом вы должны удостоверить степень вашей уверенности что реальный человек имеет указанный им
-        идентификатор (в соответствии с его персональными данными, которые он должен вам предоставить) и что
-        именно он имеет доступ к своему документу с указанным им идентификатором.
+        Своим голосом вы должны удостоверить степень вашей уверенности в том, что именно данный реальный человек,
+        с указанными выше персональными данными (которые он должен вам предоставить), имеет доступ к документу
+        с указанным выше идентификатором.
       %table.white.wide.padded
         %tr
           %td.left{:width => '20%'}

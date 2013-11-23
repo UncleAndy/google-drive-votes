@@ -24,7 +24,7 @@ class TrustVotesController < ApplicationController
       else
         trust_votes = nil
         row_num = 1
-        google_action do
+        success = google_action do
           GoogleUserDoc.init(session)
           trust_votes = GoogleUserDoc.doc_trust_votes_page
           # Находим последнюю свободную строку в документе и в нее прописываем новый голос
@@ -38,6 +38,7 @@ class TrustVotesController < ApplicationController
           trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
           trust_votes.save
         end
+        return false if !success
 
         if trust_votes && trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
           UserTrustNetVote.create({
