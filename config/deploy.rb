@@ -37,11 +37,15 @@ end
 desc "Start unicorn"
 task :start, :except => { :no_release => true } do
   run "cd #{current_path} ; bundle exec unicorn_rails -D -E production -c config/unicorn.rb"
+  run_remote_rake "resque:start_workers"
+  run_remote_rake "resque:start_scheduler"
 end
 
 desc "Stop unicorn"
 task :stop, :except => { :no_release => true } do
   run "kill -s QUIT `cat /home/deployer/projects/#{ project_name }/shared/pids/unicorn.pid`"
+  run_remote_rake "resque:stop_workers"
+  run_remote_rake "resque:stop_scheduler"
 end
 
 after 'deploy:finalize_update', 'deploy:symlink_db'
