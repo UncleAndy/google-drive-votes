@@ -1,5 +1,5 @@
 trust_net_calc_result:
-  cron: '0 */5 * * * *'
+  cron: '0 */30 * * * *'
   class: 'Jobs::TrustNetCalcResult'
   queue: trust_net_culc_result
   args:

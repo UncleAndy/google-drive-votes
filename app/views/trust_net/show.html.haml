@@ -62,9 +62,9 @@
         = link_to "http://spreadsheets.google.com/ccc?key=#{row.doc_key}", :target => '_blank' do
           = spaced_str(row.doc_key)
       %td.center
-        = row.verify_level
+        = sprintf('%.2f', row.verify_level)
       %td.center
-        = row.trust_level
+        = sprintf('%.2f', row.trust_level)
       %td.center
         = row.votes_count
 %p{ :align => 'center' }
