@@ -19,7 +19,7 @@ class UserController < ApplicationController
     if idhash.present? && session[:auth_token].present?
       session[:idhash] = idhash
 
-      google_action do
+      return false if !google_action do
         GoogleUserDoc.init(session)
         user_info = GoogleUserDoc.doc_info_page
         user_info["B1"] = idhash
@@ -42,7 +42,7 @@ class UserController < ApplicationController
     user = UserOption.find_or_create_by_idhash(session[:idhash])
     user.update_attributes(params[:user])
     
-    google_action do
+    return false if !google_action do
       GoogleUserDoc.init(session)
       user_info = GoogleUserDoc.doc_info_page
       user_info["B3"] = params[:user][:emails]
@@ -78,7 +78,7 @@ class UserController < ApplicationController
     # Ищем юзера в составе участников сети доверия
 
     if @user_doc_key.present?
-      google_action do
+      return false if !google_action do
         GoogleUserDoc.init(session)
         @user_doc = GoogleUserDoc.user_google_session.spreadsheet_by_key(@user_doc_key)
         @user_info = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
