@@ -53,8 +53,17 @@ class AuthController < ApplicationController
       if user_doc
         google_action do
           user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
-          session[:idhash] = user_info["B1"] if user_info
-          session[:doc_key] = user_doc.key
+          
+          idhash = user_info["B1"] if user_info
+          doc_key = user_doc.key
+
+          # Проверяем соответствие idhash и документа
+          if !TrusnNetMember.find_by_idhash(idhash) || TrusnNetMember.find_by_idhash_and_doc_key(idhash, doc_key)
+            session[:idhash] = idhash
+            session[:doc_key] = doc_key
+          else
+            flash[:alert] = I18n.t("errors.not_your_idhash")
+          end
         end
       else
         user_doc, user_info, user_trust_votes, user_votes = create_user_doc(google_session)

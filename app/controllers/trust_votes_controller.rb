@@ -28,6 +28,8 @@ class TrustVotesController < ApplicationController
   def create
     if check_data
       # Сначала проверяем что уже нет строки с таким идентификатором пользователя или документа
+      params[:vote][:vote_idhash] = params[:vote][:vote_idhash].gsub(/\s+/, '')
+      params[:vote][:vote_doc_key] = params[:vote][:vote_doc_key].gsub(/ /, '')
       founded_idhash = UserTrustNetVote.find_by_idhash_and_vote_idhash(session[:idhash], params[:vote][:vote_idhash])
       founded_doc_key = UserTrustNetVote.find_by_idhash_and_vote_doc_key(session[:idhash], params[:vote][:vote_doc_key])
 
