@@ -1,11 +1,14 @@
-%h2{ :align => 'center' } Сеть доверия на основе документов Google
+%h2.center Сеть доверия на основе документов Google
 
-%p{ :align => 'center' }
+%p.center
   = link_to trust_net_path do
     %button.btn.btn-primary.btn-lg= I18n.t("titles.trust_net")
-%p{ :align => 'center' }
-  = link_to auth_path do
-    %button.btn.btn-primary.btn-lg= I18n.t("titles.authorization")
-%p{ :align => 'center' }
+%p.center
   = link_to user_path do
     %button.btn.btn-primary.btn-lg= I18n.t("titles.user_cabinet")
+%p.center
+  = link_to auth_path do
+    - if session[:auth_token].present? && session[:refresh_token].present?
+      %button.btn.btn-success.btn-lg= I18n.t("titles.authorization")
+    - else
+      %button.btn.btn-warning.btn-lg= I18n.t("titles.authorization")
