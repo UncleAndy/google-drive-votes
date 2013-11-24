@@ -77,7 +77,7 @@ class AuthController < ApplicationController
             doc_key = user_doc.key
 
             # Проверяем соответствие idhash и документа
-            if !TrusnNetMember.find_by_idhash(idhash) || TrusnNetMember.find_by_idhash_and_doc_key(idhash, doc_key)
+            if !TrustNetMember.find_by_idhash(idhash) || TrustNetMember.find_by_idhash_and_doc_key(idhash, doc_key)
               session[:idhash] = idhash
               session[:doc_key] = doc_key
             else
