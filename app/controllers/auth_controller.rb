@@ -88,7 +88,7 @@ class AuthController < ApplicationController
               user_info = nil
             else
               session[:idhash] = ''
-              session[:doc_key] = ''
+              session[:doc_key] = doc_key
               flash[:alert] = I18n.t("errors.not_your_idhash")
             end
           end
