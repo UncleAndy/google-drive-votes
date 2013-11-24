@@ -53,16 +53,36 @@ class AuthController < ApplicationController
       if user_doc
         google_action do
           user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
-          
-          idhash = user_info["B1"] if user_info
-          doc_key = user_doc.key
 
-          # Проверяем соответствие idhash и документа
-          if !TrusnNetMember.find_by_idhash(idhash) || TrusnNetMember.find_by_idhash_and_doc_key(idhash, doc_key)
-            session[:idhash] = idhash
-            session[:doc_key] = doc_key
+          # Проверяем что документ доступен для записи
+          test_val = rand().to_s
+          user_info["A2"] = test_val
+          user_info.save
+          idx = 1
+
+          # В цикле пытаемся найти другие документы с таким именем доступные для записи в данной коллекции
+          while user_info["A2"] != test_val
+            user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx] if collection
+            user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
+            idx += 1
+            
+            user_info["A2"] = test_val
+            user_info.save
+          end
+          
+          if user_info["A2"] != test_val
+            flash[:alert] = I18n.t("errors.not_your_document")
           else
-            flash[:alert] = I18n.t("errors.not_your_idhash")
+            idhash = user_info["B1"] if user_info
+            doc_key = user_doc.key
+
+            # Проверяем соответствие idhash и документа
+            if !TrusnNetMember.find_by_idhash(idhash) || TrusnNetMember.find_by_idhash_and_doc_key(idhash, doc_key)
+              session[:idhash] = idhash
+              session[:doc_key] = doc_key
+            else
+              flash[:alert] = I18n.t("errors.not_your_idhash")
+            end
           end
         end
       else
