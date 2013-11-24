@@ -131,14 +131,26 @@ class AuthController < ApplicationController
                               :odnoklassniki => user_info["B10"]
                               })
 
-      # Голоса в сети доверия (добавляем отсутствующие)
+      # Голоса в сети доверия
+      # добавляем БД присутствующие в документе, но отсутствующие в БД
+      doc_trust_votes = {}
       user_trust_votes.rows.each do |row|
+        id = "#{row[0]}:#{row[1]}"
+        doc_trust_votes[id] = true
+        
         next if row[0].blank? || row[1].blank? || row[2].blank? || row[3].blank?
         vote = UserTrustNetVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(idhash, row[0], row[1])
         if vote
           vote.update_attributes({:vote_verify_level => row[2], :vote_trust_level => row[3]}) if vote.vote_verify_level != row[2].to_i || vote.vote_trust_level != row[3].to_i
         else
           UserTrustNetVote.create({:idhash => idhash, :vote_idhash => row[0], :vote_doc_key => row[1], :vote_verify_level => row[2], :vote_trust_level => row[3]})
+        end
+      end
+      # удаляем из БД отсутствующие в документе, но присутствующие в БД
+      UserTrustNetVote.by_owner(idhash).each do |vote|
+        id = "#{vote.vote_idhash}:#{vote.vote_doc_key}"
+        if !doc_trust_votes[id]
+          vote.destroy
         end
       end
 
