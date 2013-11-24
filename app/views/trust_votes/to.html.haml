@@ -25,7 +25,8 @@
     %th.center
       = I18n.t('user_trust_net.owner_id')
     %th.center
-      = I18n.t('user_trust_net.your_doc_key')
+      - if params[:idhash].present?
+        = I18n.t('user_trust_net.doc_key')
     %th.center.col-sm-1
       = I18n.t('user_trust_net.verify_level')
     %th.center.col-sm-1
