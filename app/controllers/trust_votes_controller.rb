@@ -6,6 +6,10 @@ class TrustVotesController < ApplicationController
     @user_trust_votes = UserTrustNetVote.by_owner(@idhash)
   end
 
+  def show
+    redirect_to user_trust_votes_path
+  end
+  
   def new
     gon.verify_level = 0
     gon.trust_level = 0
@@ -77,8 +81,7 @@ class TrustVotesController < ApplicationController
         trust_votes = GoogleUserDoc.doc_trust_votes_page
         # Находим строку с данным голосом и прописываем его изменение
         row_num = 1
-        while trust_votes["A#{row_num}"].present? &&
-              trust_votes["A#{row_num}"] != params[:id]
+        while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != params[:id]
           row_num += 1
         end
 
@@ -90,6 +93,41 @@ class TrustVotesController < ApplicationController
       end
     end
     redirect_to user_trust_votes_path
+  end
+
+  def destroy
+    # Сначала удаляем строку из документа
+    @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
+    if @vote
+      return false if !google_action do
+        GoogleUserDoc.init(session)
+        trust_votes = GoogleUserDoc.doc_trust_votes_page
+
+        # Ищем строку в документе
+        row_num = 1
+        while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != params[:id]
+          row_num += 1
+        end
+
+        if trust_votes["A#{row_num}"] == params[:id]
+          # Сдвигаем все последующие строки на 1 вверх
+          while trust_votes["A#{row_num}"].present?
+            trust_votes["A#{row_num}"] = trust_votes["A#{row_num+1}"]
+            trust_votes["B#{row_num}"] = trust_votes["B#{row_num+1}"]
+            trust_votes["C#{row_num}"] = trust_votes["C#{row_num+1}"]
+            trust_votes["D#{row_num}"] = trust_votes["D#{row_num+1}"]
+            row_num += 1
+          end
+          trust_votes.save
+        end
+      end
+
+      @vote.destroy
+      redirect_to user_trust_votes_path
+    else
+      flash[:alert] = I18n.t("errors.user_trust_vote_not_found")
+      redirect_to :back
+    end
   end
   
   private
