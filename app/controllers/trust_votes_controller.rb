@@ -71,7 +71,7 @@ class TrustVotesController < ApplicationController
   end
 
   def edit
-    @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
+    @vote = UserTrustNetVote.find_by_idhash_and_vote_idhash(@idhash, params[:id])
     if @vote
       gon.verify_level = @vote.vote_verify_level
       gon.trust_level = @vote.vote_trust_level
@@ -83,7 +83,7 @@ class TrustVotesController < ApplicationController
 
   def update
     if check_data(true)
-      @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
+      @vote = UserTrustNetVote.find_by_idhash_and_vote_idhash(@idhash, params[:id])
       @vote.update_attributes(params[:vote]) if @vote
 
       return false if !google_action do
@@ -107,7 +107,7 @@ class TrustVotesController < ApplicationController
 
   def destroy
     # Сначала удаляем строку из документа
-    @vote = UserTrustNetVote.find_by_vote_idhash(params[:id])
+    @vote = UserTrustNetVote.find_by_idhash_and_vote_idhash(@idhash, params[:id])
     if @vote
       return false if !google_action do
         GoogleUserDoc.init(session)
