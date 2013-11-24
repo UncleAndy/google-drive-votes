@@ -12,7 +12,7 @@ $( document ).ready(function() {
   });
 
   $("#new_trust_vote_form").submit(function() {
-    if $("#new_vote_idhash_field").val() == '' {
+    if ($("#new_vote_idhash_field").val() == '') {
       $("#new_vote_idhash_field").val(calc_idhash());
     };
     return(true);
