@@ -71,6 +71,10 @@ class AuthController < ApplicationController
           end
           
           if user_info["A2"] != test_val
+            session[:idhash] = ''
+            session[:doc_key] = ''
+            user_doc = nil
+            user_info = nil
             flash[:alert] = I18n.t("errors.not_your_document")
           else
             idhash = user_info["B1"] if user_info
@@ -80,7 +84,11 @@ class AuthController < ApplicationController
             if !TrustNetMember.find_by_idhash(idhash) || TrustNetMember.find_by_idhash_and_doc_key(idhash, doc_key)
               session[:idhash] = idhash
               session[:doc_key] = doc_key
+              user_doc = nil
+              user_info = nil
             else
+              session[:idhash] = ''
+              session[:doc_key] = ''
               flash[:alert] = I18n.t("errors.not_your_idhash")
             end
           end
