@@ -10,6 +10,8 @@ class TrustNetMember < ActiveRecord::Base
       model.errors[:base] << I18n.t('errors.idhash_wrong_doc_key') if idhash_exists
       model.errors[:base] << I18n.t('doc_key_wrong_idhash') if doc_key_exists
       model
+    elsif model = find_by_idhash_and_doc_key(idhash, doc_key)
+      model
     else
       create({:idhash => idhash, :doc_key => doc_key})
     end
