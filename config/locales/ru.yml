@@ -31,6 +31,7 @@ ru:
   titles:
     home: "Главная"
     trust_net: "Сеть доверия"
+    authorization: "Пройти авторизацию"
     user_cabinet: "Личный кабинет"
     user_trust_votes: "Мои голоса в сети доверия"
     to_user_trust_votes: "Голоса в сети доверия за меня"
