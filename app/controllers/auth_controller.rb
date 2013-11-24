@@ -150,8 +150,6 @@ class AuthController < ApplicationController
       user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info) if !user_info
       user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net) if !user_trust_votes
 
-      return if idhash.blank?
-
       # Настройки пользователя
       user = UserOption.find_or_create_by_idhash(idhash)
       user.update_attributes({
