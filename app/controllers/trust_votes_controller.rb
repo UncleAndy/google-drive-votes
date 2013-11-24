@@ -9,6 +9,16 @@ class TrustVotesController < ApplicationController
   def show
     redirect_to user_trust_votes_path
   end
+
+  def to
+    # Голоса сети доверия за данного пользователя
+    @user_trust_votes = UserTrustNetVote.to_user(@idhash)
+  end
+
+  def from
+    # Голоса сети доверия от данного пользователя (не текущего)
+    @user_trust_votes = UserTrustNetVote.by_owner(params[:idhash])
+  end
   
   def new
     gon.verify_level = 0

@@ -46,6 +46,12 @@
         %td.left= f.input_field :odnoklassniki, required: false, :disabled => true
 %br
 %p{ :align => 'center' }
+  = link_to from_user_trust_votes_path(:idhash => @idhash) do
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.other_user_trust_votes")
+  = link_to to_user_trust_votes_path(:idhash => @idhash) do
+    %button.btn.btn-primary.btn-lg= I18n.t("titles.to_other_user_trust_votes")
+%br
+%p{ :align => 'center' }
   = link_to :back do
     %button.btn.btn-default
       %span.glyphicon.glyphicon-backward
