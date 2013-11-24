@@ -11,6 +11,9 @@
     Проверяемый человек
   .panel-body
     %p
+      Вы можете ввести либо идентификатор вручную, либо софрмировать его, указав персональные данные 
+      проверяемого человека.
+    %p
       Введите фамилию, имя, отчество и дату рождения проверяемого человека.
       Эти данные не будут отправлятся на сервер или где-либо сохраняться.
       Они будут использованы лишь для определения идентификатора проверяемого.
@@ -32,7 +35,7 @@
   
 = simple_form_for :vote, :url => user_trust_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_trust_vote_form' } do |f|
   .center
-    = f.hidden_field :vote_idhash, id: 'new_vote_idhash_field', required: true
+    = f.input :vote_idhash, id: 'new_vote_idhash_field', required: true
     = f.input :vote_doc_key, required: true
   %br
   .panel.panel-default

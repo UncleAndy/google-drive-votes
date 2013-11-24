@@ -12,7 +12,9 @@ $( document ).ready(function() {
   });
 
   $("#new_trust_vote_form").submit(function() {
-    $("#new_vote_idhash_field").val(calc_idhash());
+    if $("#new_vote_idhash_field").val() == '' {
+      $("#new_vote_idhash_field").val(calc_idhash());
+    };
     return(true);
   });
 
