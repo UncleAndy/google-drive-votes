@@ -77,6 +77,9 @@ class AuthController < ApplicationController
             user_info = nil
             flash[:alert] = I18n.t("errors.not_your_document")
           else
+            user_info["A2"] = ''
+            user_info.save
+            
             idhash = user_info["B1"] if user_info
             doc_key = user_doc.key
 
