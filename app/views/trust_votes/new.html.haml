@@ -35,7 +35,7 @@
   
 = simple_form_for :vote, :url => user_trust_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_trust_vote_form' } do |f|
   .center
-    = f.input :vote_idhash, id: 'new_vote_idhash_field', required: true
+    = f.input :vote_idhash, :input_html => { id: 'new_vote_idhash_field' }, required: true
     = f.input :vote_doc_key, required: true
   %br
   .panel.panel-default

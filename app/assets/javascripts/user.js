@@ -12,7 +12,7 @@ $( document ).ready(function() {
   });
 
   $("#new_trust_vote_form").submit(function() {
-    if ($("#new_vote_idhash_field").val() == '') {
+    if ((typeof($("#new_vote_idhash_field").val()) == "undefined") || ($.trim($("#new_vote_idhash_field").val()).length == 0)) {
       $("#new_vote_idhash_field").val(calc_idhash());
     };
     return(true);
