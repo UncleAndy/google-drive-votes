@@ -145,6 +145,7 @@ class AuthController < ApplicationController
 
   # Синхронизация данных в БД с документом
   def sync_data(idhash, user_doc, user_info, user_trust_votes, user_votes)
+    return if user_doc.blank?
     google_action do
       user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info) if !user_info
       user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net) if !user_trust_votes
