@@ -1,13 +1,13 @@
 %h2.center
   - if params[:idhash].present?
-    = I18n.t("titles.to_other_user_trust_votes")
+    = I18n.t("titles.other_user_trust_votes")
   - else
-    = I18n.t("titles.to_user_trust_votes")
+    = I18n.t("titles.user_trust_votes")
 %h3.center
   = link_to I18n.t("titles.home"), root_path
   = "-"
   - if params[:idhash].present?
-    = link_to I18n.t("titles.user_info"), info_user_path(:idhash => @idhash)
+    = link_to I18n.t("titles.user_info"), doc_info_user_path(:doc_key => @doc_key)
   - else
     = link_to I18n.t("titles.user_cabinet"), user_path
 - if params[:idhash].present?
@@ -20,28 +20,29 @@
     %input.form-control{ :value => @idhash, :readonly => true, :style => input_style }
     %span.input-group-addon
       = I18n.t("user_info_page.idhash")
+- if params[:doc_key].present?
+  %p.input-group
+    %span.input-group-addon
+      = I18n.t("user_info_page.doc_key")
+    - input_style = "text-align: center;"
+    %input.form-control{ :value => @doc_key, :readonly => true, :style => input_style }
+    %span.input-group-addon
+      = I18n.t("user_info_page.doc_key")
 %table.table.table-bordered.table-hover.table-condensed
   %tr
     %th.center
-      = I18n.t('user_trust_net.owner_id')
+      = I18n.t('user_trust_net.id')
     %th.center
-      - if !params[:idhash].present?
-        = I18n.t('user_trust_net.your_doc_key')
-      - else
-        = I18n.t('user_trust_net.doc_key_link')
+      = I18n.t('user_trust_net.doc_key')
     %th.center.col-sm-1
       = I18n.t('user_trust_net.verify_level')
-    %th.center.col-sm-1
-      = I18n.t('user_trust_net.trust_level')
   - @user_trust_votes.each do |vote|
     %tr
-      %td
-        = link_to info_user_path(:doc_key => vote.owner.doc_key) do
-          = spaced_str(vote.idhash)
+      %td.center
+        = link_to doc_info_user_path(:doc_key => vote.vote_doc_key) do
+          = spaced_str(vote.vote_idhash)
       %td.center
         = link_to "http://spreadsheets.google.com/ccc?key=#{vote.vote_doc_key}", :target => '_blank' do
           = spaced_str(vote.vote_doc_key)
-      %td.center
-        = vote.vote_verify_level
       %td.center
         = vote.vote_trust_level

@@ -154,7 +154,7 @@ class AuthController < ApplicationController
       user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_net) if !user_trust_votes
 
       # Настройки пользователя
-      user = UserOption.find_or_create_by_idhash(idhash)
+      user = UserOption.find_or_create_by_idhash_and_doc_key(idhash, user_doc.key)
       user.update_attributes({
                               :emails => user_info["B3"],
                               :skype => user_info["B4"],
@@ -178,11 +178,11 @@ class AuthController < ApplicationController
         if vote
           vote.update_attributes({:vote_verify_level => row[2], :vote_trust_level => row[3]}) if vote.vote_verify_level != row[2].to_i || vote.vote_trust_level != row[3].to_i
         else
-          UserTrustNetVote.create({:idhash => idhash, :vote_idhash => row[0], :vote_doc_key => row[1], :vote_verify_level => row[2], :vote_trust_level => row[3]})
+          UserTrustNetVote.create({:idhash => idhash, :doc_key => user_doc.key, :vote_idhash => row[0], :vote_doc_key => row[1], :vote_verify_level => row[2], :vote_trust_level => row[3]})
         end
       end
       # удаляем из БД отсутствующие в документе, но присутствующие в БД
-      UserTrustNetVote.by_owner(idhash).each do |vote|
+      UserTrustNetVote.by_owner(idhash, user_doc.key).each do |vote|
         id = "#{vote.vote_idhash}:#{vote.vote_doc_key}"
         if !doc_trust_votes[id]
           vote.destroy

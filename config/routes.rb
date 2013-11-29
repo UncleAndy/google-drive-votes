@@ -9,13 +9,16 @@ GoogleDriveVotes::Application.routes.draw do
   resource :user, :controller => 'user' do
     resources :trust_votes do
       collection do
-        get :to
-        get :from
+        get :trust_to
+        get :trust_from
+        get :verify_to
+        get :verify_from
       end
     end
     member do
       get :idhash_check
-      get :info
+      get :doc_info
+      get :idhash_info
     end
   end
 
@@ -24,6 +27,8 @@ GoogleDriveVotes::Application.routes.draw do
       get :members
     end
   end
-  
+
+  match 'about', :to => 'home#about'
+  match 'extended', :to => 'home#extended'
   root :to => "home#index"
 end

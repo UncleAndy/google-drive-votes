@@ -1,7 +1,6 @@
 # -*- encoding : utf-8 -*-
 class UserController < ApplicationController
   before_filter :login_required
-  before_filter :set_user_by_id, :only => [:info]
   
   def show
     redirect_to new_user_path and return if session[:idhash].blank?
@@ -39,7 +38,7 @@ class UserController < ApplicationController
   end
 
   def update
-    user = UserOption.find_or_create_by_idhash(session[:idhash])
+    user = UserOption.find_or_create_by_idhash_and_doc_key(session[:idhash], session[:doc_key])
     user.update_attributes(params[:user])
     
     return false if !google_action do
@@ -62,28 +61,20 @@ class UserController < ApplicationController
     # Страница проверки идентификатора пользователя (JS)
   end
 
-  def info
-    @idhash = params[:idhash]
-    @user_member = TrustNetMember.find_by_idhash(@idhash) if @idhash
-    @doc_key = @user_member.doc_key if @user_member
-    @user = UserOption.find_or_create_by_idhash(@idhash) if @idhash
-  end
-  
-  private
-
-
-  def set_user_by_id
-    @user_idhash = params[:idhash]
-
-    # Ищем юзера в составе участников сети доверия
-
-    if @user_doc_key.present?
-      return false if !google_action do
-        GoogleUserDoc.init(session)
-        @user_doc = GoogleUserDoc.user_google_session.spreadsheet_by_key(@user_doc_key)
-        @user_info = @user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
-        @user_idhash = @user_info["B1"] if @user_info
-      end
+  def doc_info
+    @doc_key = params[:doc_key]
+    @user_member = TrustNetMember.find_by_doc_key(@doc_key) if @doc_key
+    if @user_member
+      @idhash = @user_member.idhash
+      @user = UserOption.find_or_create_by_idhash(@idhash) if @idhash
+    else
+      flash[:alert] = I18n.t("errors.member_not_found")
+      redirect_to :back
     end
+  end
+
+  def idhash_info
+    @idhash = params[:idhash]
+    @members = TrustNetMember.where(:idhash => @idhash)
   end
 end

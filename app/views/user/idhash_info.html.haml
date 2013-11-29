@@ -1,0 +1,60 @@
+%h2.center= I18n.t("titles.user_cabinet")
+%h3.center
+  = link_to I18n.t("titles.home"), root_path
+%p.input-group
+  %span.input-group-addon
+    = I18n.t("user_info_page.idhash")
+  - input_style = "text-align: center;"
+  - if @members.count == 0
+    - input_style = "#{input_style}background-color: red;"
+  %input.form-control{ :value => @idhash, :readonly => true, :style => input_style }
+  %span.input-group-addon
+    = I18n.t("user_info_page.idhash")
+
+@members.each do |member|
+  %p.input-group
+    %span.input-group-addon
+      = I18n.t("user_info_page.doc_key")
+    %input.form-control{ :value => member.doc_key, :readonly => true, :style => 'text-align: center;' }
+    %span.input-group-addon
+      = I18n.t("user_info_page.doc_key")
+  %br
+  - options = member.options
+  .center
+    %table.invis.wide
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.emails")
+        %td.left= f.input_field :emails, required: false, :disabled => true, :value => options.emails
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.skype")
+        %td.left= f.input_field :skype, required: false, :disabled => true, :value => options.skype
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.icq")
+        %td.left= f.input_field :icq, required: false, :disabled => true, :value => options.icq
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.jabber")
+        %td.left= f.input_field :jabber, required: false, :disabled => true, :value => options.jabber
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.phones")
+        %td.left= f.input_field :phones, required: false, :disabled => true, :value => options.phones
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.facebook")
+        %td.left= f.input_field :facebook, required: false, :disabled => true, :value => options.facebook
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.vk")
+        %td.left= f.input_field :vk, required: false, :disabled => true, :value => options.vk
+      %tr
+        %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.odnoklassniki")
+        %td.left= f.input_field :odnoklassniki, required: false, :disabled => true, :value => options.odnoklassniki
+  %br
+  %p{ :align => 'center' }
+    = link_to from_user_trust_votes_path(:idhash => member.idhash, :doc_key => member.doc_key) do
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.other_user_trust_votes")
+    = link_to to_user_trust_votes_path(:idhash => member.idhash, :doc_key => member.doc_key) do
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.to_other_user_trust_votes")
+%br
+%p{ :align => 'center' }
+  = link_to :back do
+    %button.btn.btn-default
+      %span.glyphicon.glyphicon-backward
+      = "На предыдущую страницу"

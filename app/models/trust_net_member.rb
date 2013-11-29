@@ -1,6 +1,10 @@
 class TrustNetMember < ActiveRecord::Base
   attr_accessible :idhash, :doc_key
 
+  def options
+    UserOption.find_or_create_by_idhash_and_doc_key(idhash, doc_key)
+  end
+  
   def self.register(idhash, doc_key)
     idhash_exists = find_by_idhash(idhash)
     doc_key_exists = find_by_doc_key(doc_key)

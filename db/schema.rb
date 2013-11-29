@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131122160042) do
+ActiveRecord::Schema.define(:version => 20131127161037) do
 
   create_table "trust_net_members", :force => true do |t|
     t.string   "idhash",     :limit => 64, :null => false
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(:version => 20131122160042) do
     t.string   "odnoklassniki"
     t.datetime "created_at",                  :null => false
     t.datetime "updated_at",                  :null => false
+    t.string   "doc_key",       :limit => 64, :null => false
   end
 
   add_index "user_options", ["idhash"], :name => "index_user_options_on_idhash", :unique => true
@@ -68,6 +69,7 @@ ActiveRecord::Schema.define(:version => 20131122160042) do
     t.integer  "vote_trust_level",                :null => false
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
+    t.string   "doc_key",           :limit => 64, :null => false
   end
 
   add_index "user_trust_net_votes", ["idhash", "vote_idhash", "vote_doc_key"], :name => "index_utnv_id_vid_vdoc_key", :unique => true

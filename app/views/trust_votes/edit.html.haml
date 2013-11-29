@@ -6,7 +6,7 @@
   = "-"
   = link_to I18n.t("titles.user_trust_votes"), user_trust_votes_path
   
-= simple_form_for :vote, :url => user_trust_vote_path(@vote.idhash), :method => :put, :html => {:autocomplete => "off"} do |f|
+= simple_form_for :vote, :url => user_trust_vote_path(@vote.complex_id), :method => :put, :html => {:autocomplete => "off"} do |f|
   .center
     = f.input :vote_idhash, required: false, disabled: true, :input_html => {:size=> '76', :class=>'center'}
     = link_to "проверка идентификатора пользователя", idhash_check_user_path, :target => "_blank"
