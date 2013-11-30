@@ -2,7 +2,7 @@
 %h3.center
   = link_to I18n.t("titles.home"), root_path
   = "-"
-  = link_to I18n.t("titles.user_info"), info_user_path(:idhash => @idhash)
+  = link_to I18n.t("titles.user_info"), doc_info_user_path(:doc_key => @doc_key)
 %p.input-group
   %span.input-group-addon
     = I18n.t("user_info_page.idhash")
@@ -25,7 +25,7 @@
   - @user_trust_votes.each do |vote|
     %tr
       %td
-        = link_to info_user_path(:idhash => vote.vote_idhash) do
+        = link_to doc_info_user_path(:idhash => vote.vote_doc_key) do
           = spaced_str(vote.vote_idhash)
       %td.center
         = link_to "http://spreadsheets.google.com/ccc?key=#{vote.vote_doc_key}", :target => '_blank' do
