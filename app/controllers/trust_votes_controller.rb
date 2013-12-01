@@ -60,8 +60,8 @@ class TrustVotesController < ApplicationController
         return false if !google_action do
           GoogleUserDoc.init(session)
           trust_votes = GoogleUserDoc.doc_trust_votes_page
-          # Находим последнюю свободную строку в документе и в нее прописываем новый голос
-          while trust_votes["A#{row_num}"].present?
+          # Находим в документе строку с таким идентификатором и документом или последнюю свободную
+          while trust_votes["A#{row_num}"].present? && (trust_votes["A#{row_num}"] != params[:vote][:vote_idhash] || trust_votes["B#{row_num}"] != params[:vote][:vote_doc_key])
             row_num += 1
           end
 
