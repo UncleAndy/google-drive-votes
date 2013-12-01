@@ -32,7 +32,7 @@
     %tr
       %td.center
         = link_to doc_info_user_path(:doc_key => vote.owner.doc_key) do
-          = spaced_str(vote.idhash)
+          = show_idhash(vote.idhash)
       %td.center
         = link_to "http://spreadsheets.google.com/ccc?key=#{vote.owner.doc_key}", :target => '_blank' do
           = spaced_str(vote.owner.doc_key)

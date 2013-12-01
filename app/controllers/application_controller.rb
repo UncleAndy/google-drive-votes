@@ -42,6 +42,16 @@ class ApplicationController < ActionController::Base
   end
   helper_method :spaced_str
 
+  def show_idhash(idhash)
+    member = TrustNetMember.find_by_idhash(idhash)
+    if member.present? && member.nick.present?
+      "#{member.nick} / #{spaced_str(idhash)}"
+    else
+      spaced_str(idhash)
+    end
+  end
+  helper_method :show_idhash
+  
   def google_action
     counter = 5
     success = false

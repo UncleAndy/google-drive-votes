@@ -61,7 +61,7 @@
     %tr
       %td
         = link_to doc_info_user_path(:doc_key => row.doc_key) do
-          = spaced_str(row.idhash)
+          = show_idhash(row.idhash)
       %td.center
         = link_to "http://spreadsheets.google.com/ccc?key=#{row.doc_key}", :target => '_blank' do
           = spaced_str(row.doc_key)

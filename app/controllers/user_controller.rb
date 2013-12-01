@@ -7,6 +7,8 @@ class UserController < ApplicationController
 
     @idhash = session[:idhash]
     @doc_key = session[:doc_key]
+    @member = TrustNetMember.find_by_idhash_and_doc_key(@idhash, @doc_key)
+    @nick = @member.nick if @member
     @user = UserOption.find_or_create_by_idhash(session[:idhash])
   end
 
@@ -17,16 +19,18 @@ class UserController < ApplicationController
     idhash = params[:user][:idhash]
     if idhash.present? && session[:auth_token].present?
       session[:idhash] = idhash
+      nick = params[:user][:nick]
 
       return false if !google_action do
         GoogleUserDoc.init(session)
         user_info = GoogleUserDoc.doc_info_page
         user_info["B1"] = idhash
+        user_info["C1"] = nick
         user_info.save
 
         # Регистрация в сети доверия (только в БД)
         if user_info["B1"] == idhash
-          rec = TrustNetMember.register(idhash, GoogleUserDoc.user_doc.key)
+          rec = TrustNetMember.register(idhash, GoogleUserDoc.user_doc.key, nick)
           if rec.errors.present?
             flash[:alert] = rec.errors.full_messages.join(', ')
             redirect_to :back and return
@@ -66,6 +70,7 @@ class UserController < ApplicationController
     @user_member = TrustNetMember.find_by_doc_key(@doc_key) if @doc_key
     if @user_member
       @idhash = @user_member.idhash
+      @nick = @user_member.nick
       @user = UserOption.find_or_create_by_idhash(@idhash) if @idhash
     else
       flash[:alert] = I18n.t("errors.member_not_found")

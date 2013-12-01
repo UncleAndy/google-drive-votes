@@ -20,6 +20,9 @@
   Дата рождения (в виде ДД.ММ.ГГГГ с нулями, например "01.01.1990"):
   %input{ :type => 'text', :id => 'birth_date'}
 = form_for :user, :url => user_path, :method => 'POST', :html => { :id => 'idhash_form' } do |f|
+  %p
+    Псевдоним, под которым вас будут видеть другие пользователи (не обязательно):
+    = f.text_field :nick
   = f.hidden_field :idhash, :id => 'idhash_field'
   %button{ :id => 'calc_hash' }
     Готово

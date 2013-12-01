@@ -3,6 +3,12 @@
   = link_to I18n.t("titles.home"), root_path
 %p.input-group
   %span.input-group-addon
+    = I18n.t("your.nick")
+  %input.form-control{ :value => @nick, :readonly => true, :style => 'text-align: center;' }
+  %span.input-group-addon
+    = I18n.t("your.nick")
+%p.input-group
+  %span.input-group-addon
     = I18n.t("your.idhash")
   %input.form-control{ :value => @idhash, :readonly => true, :style => 'text-align: center;' }
   %span.input-group-addon
