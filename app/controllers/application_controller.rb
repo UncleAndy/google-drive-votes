@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
   def show_idhash(idhash)
     member = TrustNetMember.find_by_idhash(idhash)
     if member.present? && member.nick.present?
-      "#{member.nick} / #{spaced_str(idhash)}"
+      "#{member.nick} / #{idhash[0..16]}..."
     else
       spaced_str(idhash)
     end
