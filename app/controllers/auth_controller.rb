@@ -168,12 +168,23 @@ class AuthController < ApplicationController
 
       # Голоса в сети доверия
       # добавляем БД присутствующие в документе, но отсутствующие в БД
+      # обновляем существующие голоса в соответствии со значением в документе
       doc_trust_votes = {}
-      user_trust_votes.rows.each do |row|
+      dup_rows = []
+      user_trust_votes.rows.each_with_index do |row, idx|
         id = "#{row[0]}:#{row[1]}"
+
+        # Проверяем не продублирован-ли голос
+        if doc_trust_votes[id]
+          # Есть дубль - второй голос помечаем на удаление (запоминаем номер строки) и игнориуем
+          row_num = idx + 1
+          dup_rows.push row_num
+          next
+        end
+        
         doc_trust_votes[id] = true
         
-        next if row[0].blank? || row[1].blank? || row[2].blank? || row[3].blank?
+        break if row[0].blank? || row[1].blank? || row[2].blank? || row[3].blank?
         vote = UserTrustNetVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(idhash, row[0], row[1])
         if vote
           vote.update_attributes({:vote_verify_level => row[2], :vote_trust_level => row[3]}) if vote.vote_verify_level != row[2].to_i || vote.vote_trust_level != row[3].to_i
@@ -181,6 +192,20 @@ class AuthController < ApplicationController
           UserTrustNetVote.create({:idhash => idhash, :doc_key => user_doc.key, :vote_idhash => row[0], :vote_doc_key => row[1], :vote_verify_level => row[2], :vote_trust_level => row[3]})
         end
       end
+
+      # Цикл по номерам дублированных строк и их удаление в документе сдвигом вверх
+      dup_rows.each_with_index do |dup_row, idx|
+        row_num = dup_row - idx
+        while user_trust_votes["A#{row_num}"].present?
+          user_trust_votes["A#{row_num}"] = user_trust_votes["A#{row_num+1}"]
+          user_trust_votes["B#{row_num}"] = user_trust_votes["B#{row_num+1}"]
+          user_trust_votes["C#{row_num}"] = user_trust_votes["C#{row_num+1}"]
+          user_trust_votes["D#{row_num}"] = user_trust_votes["D#{row_num+1}"]
+          row_num += 1
+        end
+      end
+      user_trust_votes.save
+      
       # удаляем из БД отсутствующие в документе, но присутствующие в БД
       UserTrustNetVote.by_owner(idhash, user_doc.key).each do |vote|
         id = "#{vote.vote_idhash}:#{vote.vote_doc_key}"

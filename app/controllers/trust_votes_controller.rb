@@ -43,18 +43,16 @@ class TrustVotesController < ApplicationController
   end
   
   def create
+    params[:vote][:vote_idhash] = params[:vote][:vote_idhash].delete(' ')
+    params[:vote][:vote_doc_key] = params[:vote][:vote_doc_key].delete(' ')
     if check_data
       # Сначала проверяем что уже нет строки с таким идентификатором пользователя или документа
-      params[:vote][:vote_idhash] = params[:vote][:vote_idhash].gsub(/\s+/, '')
-      params[:vote][:vote_doc_key] = params[:vote][:vote_doc_key].gsub(/ /, '')
       founded_idhash = UserTrustNetVote.find_by_idhash_and_vote_idhash(session[:idhash], params[:vote][:vote_idhash])
       founded_doc_key = UserTrustNetVote.find_by_idhash_and_vote_doc_key(session[:idhash], params[:vote][:vote_doc_key])
 
-      if founded_idhash
-        flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
-      elsif founded_doc_key
-        flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
-      else
+Rails.logger.info("DBG: #{founded_idhash.inspect}\n#{founded_doc_key.inspect}")
+      
+      if (founded_idhash.present? && founded_doc_key.present? && founded_idhash.id == founded_doc_key.id) || (founded_idhash.blank? && founded_doc_key.blank?)
         trust_votes = nil
         row_num = 1
         return false if !google_action do
@@ -74,17 +72,27 @@ class TrustVotesController < ApplicationController
         
 
         if trust_votes && trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
-          UserTrustNetVote.create({
-                                  :idhash => @idhash,
-                                  :doc_key => @doc_key,
-                                  :vote_idhash => params[:vote][:vote_idhash],
-                                  :vote_doc_key => params[:vote][:vote_doc_key],
-                                  :vote_verify_level => params[:vote][:vote_verify_level],
-                                  :vote_trust_level => params[:vote][:vote_trust_level]
-                                  })
+          if !founded_idhash
+            UserTrustNetVote.create({
+                                    :idhash => @idhash,
+                                    :doc_key => @doc_key,
+                                    :vote_idhash => params[:vote][:vote_idhash],
+                                    :vote_doc_key => params[:vote][:vote_doc_key],
+                                    :vote_verify_level => params[:vote][:vote_verify_level],
+                                    :vote_trust_level => params[:vote][:vote_trust_level]
+                                    })
+          else
+            founded_idhash.update_attributes({
+                                    :vote_verify_level => params[:vote][:vote_verify_level],
+                                    :vote_trust_level => params[:vote][:vote_trust_level]})
+          end
         else
           flash[:alert] = I18n.t("errors.google_save_error")
         end
+      elsif founded_idhash
+        flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
+      elsif founded_doc_key
+        flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
       end
     end
     redirect_to user_trust_votes_path

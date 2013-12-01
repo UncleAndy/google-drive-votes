@@ -28,6 +28,13 @@ class ApplicationController < ActionController::Base
         res = "#{res}#{sep}#{idhash[start..fin]}"
         sep = ' '
       end
+
+      ost = idhash.size - (16 * (idhash.size / 16))
+      if ost > 0
+        start = (idhash.size / 16) * 16
+        fin = idhash.size
+        res = "#{res}#{sep}#{idhash[start..fin]}"
+      end
     else
       res = idhash
     end
