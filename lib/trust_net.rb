@@ -13,7 +13,6 @@ class TrustNet
   private
 
   def self.calc_iteration(temp_result = {})
-    next_result = {}
     TrustNetMember.all.each do |member|
       member_id = "#{member.idhash}:#{member.doc_key}"
       UserTrustNetVote.by_owner(member.idhash).each do |vote|

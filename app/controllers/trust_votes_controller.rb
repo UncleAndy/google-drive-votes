@@ -50,9 +50,7 @@ class TrustVotesController < ApplicationController
       founded_idhash = UserTrustNetVote.find_by_idhash_and_vote_idhash(session[:idhash], params[:vote][:vote_idhash])
       founded_doc_key = UserTrustNetVote.find_by_idhash_and_vote_doc_key(session[:idhash], params[:vote][:vote_doc_key])
 
-Rails.logger.info("DBG: #{founded_idhash.inspect}\n#{founded_doc_key.inspect}")
-      
-      if (founded_idhash.present? && founded_doc_key.present? && founded_idhash.id == founded_doc_key.id) || (founded_idhash.blank? && founded_doc_key.blank?)
+      if (founded_idhash.present? && founded_doc_key.present? && founded_idhash.id == founded_doc_key.id) || founded_doc_key.blank?
         trust_votes = nil
         row_num = 1
         return false if !google_action do
@@ -89,8 +87,6 @@ Rails.logger.info("DBG: #{founded_idhash.inspect}\n#{founded_doc_key.inspect}")
         else
           flash[:alert] = I18n.t("errors.google_save_error")
         end
-      elsif founded_idhash
-        flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
       elsif founded_doc_key
         flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
       end
