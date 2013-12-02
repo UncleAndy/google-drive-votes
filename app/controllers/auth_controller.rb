@@ -25,6 +25,7 @@ class AuthController < ApplicationController
     user_doc, user_info, user_trust_votes, user_votes = set_idhash(auth_token.token)
     sync_data(session[:idhash], user_doc, user_info, user_trust_votes, user_votes)
 
+    flash[:notice] = I18n.t('redo_required')
     redirect_to session[:site_return_url] || root_path
   end
 
