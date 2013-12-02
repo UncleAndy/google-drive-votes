@@ -50,14 +50,16 @@ class TrustVotesController < ApplicationController
       founded_idhash = UserTrustNetVote.find_by_idhash_and_vote_idhash(session[:idhash], params[:vote][:vote_idhash])
       founded_doc_key = UserTrustNetVote.find_by_idhash_and_vote_doc_key(session[:idhash], params[:vote][:vote_doc_key])
 
-      if (founded_idhash.present? && founded_doc_key.present? && founded_idhash.id == founded_doc_key.id) || founded_doc_key.blank?
+      update_required = founded_idhash.present? && founded_doc_key.present? && founded_idhash.id == founded_doc_key.id
+      if update_required || founded_doc_key.blank?
         trust_votes = nil
         row_num = 1
         return false if !google_action do
           GoogleUserDoc.init(session)
           trust_votes = GoogleUserDoc.doc_trust_votes_page
           # Находим в документе строку с таким идентификатором и документом или последнюю свободную
-          while trust_votes["A#{row_num}"].present? && (trust_votes["A#{row_num}"] != params[:vote][:vote_idhash] || trust_votes["B#{row_num}"] != params[:vote][:vote_doc_key])
+          while trust_votes["A#{row_num}"].present? &&
+                (trust_votes["A#{row_num}"] != params[:vote][:vote_idhash] || trust_votes["B#{row_num}"] != params[:vote][:vote_doc_key])
             row_num += 1
           end
 
@@ -70,7 +72,11 @@ class TrustVotesController < ApplicationController
         
 
         if trust_votes && trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
-          if !founded_idhash
+          if update_required
+            founded_idhash.update_attributes({
+                                    :vote_verify_level => params[:vote][:vote_verify_level],
+                                    :vote_trust_level => params[:vote][:vote_trust_level]})
+          else
             UserTrustNetVote.create({
                                     :idhash => @idhash,
                                     :doc_key => @doc_key,
@@ -79,10 +85,6 @@ class TrustVotesController < ApplicationController
                                     :vote_verify_level => params[:vote][:vote_verify_level],
                                     :vote_trust_level => params[:vote][:vote_trust_level]
                                     })
-          else
-            founded_idhash.update_attributes({
-                                    :vote_verify_level => params[:vote][:vote_verify_level],
-                                    :vote_trust_level => params[:vote][:vote_trust_level]})
           end
         else
           flash[:alert] = I18n.t("errors.google_save_error")
