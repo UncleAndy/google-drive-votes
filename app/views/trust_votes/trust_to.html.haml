@@ -31,10 +31,10 @@
   - @user_trust_votes.each do |vote|
     %tr
       %td.center
-        = link_to doc_info_user_path(:doc_key => vote.owner.doc_key) do
+        = link_to doc_info_user_path(:doc_key => vote.doc_key) do
           = show_idhash(vote.idhash)
       %td.center
-        = link_to "http://spreadsheets.google.com/ccc?key=#{vote.owner.doc_key}", :target => '_blank' do
-          = spaced_str(vote.owner.doc_key)
+        = link_to "http://spreadsheets.google.com/ccc?key=#{vote.doc_key}", :target => '_blank' do
+          = spaced_str(vote.doc_key)
       %td.center
         = vote.vote_trust_level
