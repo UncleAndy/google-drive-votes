@@ -71,7 +71,7 @@ class UserController < ApplicationController
     if @user_member
       @idhash = @user_member.idhash
       @nick = @user_member.nick
-      @user = UserOption.find_or_create_by_idhash(@idhash) if @idhash
+      @user = UserOption.find_or_create_by_idhash_and_doc_key(@idhash, @doc_key) if @idhash && @doc_key
     else
       flash[:alert] = I18n.t("errors.member_not_found")
       redirect_to :back
