@@ -48,6 +48,7 @@ ru:
     user_trust_vote_edit: "Изменение голоса в сети доверия"
     trust_net_members: "Список участников"
     user_info: "Информация о пользователе"
+    change_identify: "Новые идентификационные данные..."
 
   your:
     idhash: "Ваш идентификатор"

@@ -19,6 +19,9 @@
   %input.form-control{ :value => @doc_key, :readonly => true, :style => 'text-align: center;' }
   %span.input-group-addon
     = I18n.t("your.doc_key")
+%p.center
+  = link_to new_user_path do
+    %button.btn.btn-success= I18n.t("titles.change_identify")
 %br
 .center
   = simple_form_for :user, :url => user_path, :method => :put, :html => {:autocomplete => "off"} do |f|
