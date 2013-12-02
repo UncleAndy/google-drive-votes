@@ -39,21 +39,26 @@ class AuthController < ApplicationController
   end
 
   def set_idhash(token)
+    Rails.logger.info("[Auth#set_idhash] run")
     google_session = nil
     user_doc = nil
     user_info = nil
     user_trust_votes = nil
     user_votes = nil
     if token.present?
+      Rails.logger.info("[Auth#set_idhash] token present")
       google_action do
         google_session = GoogleUserDoc.user_google_session(token)
-        Rails.logger.info("DBG: user doc title '#{Settings.google.user.main_doc}'")
+        Rails.logger.info("[Auth#set_idhash] google session = #{google_session.inspect}")
         collection = google_session.collection_by_title(Settings.google.user.collection)
+        Rails.logger.info("[Auth#set_idhash] collection = #{collection.inspect}")
         user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[0] if collection
+        Rails.logger.info("[Auth#set_idhash] user_doc = #{user_doc.inspect}")
       end
       if user_doc
         google_action do
           user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
+          Rails.logger.info("[Auth#set_idhash] user_info = #{user_info.inspect}")
 
           # Проверяем что документ доступен для записи
           test_val = rand().to_s
@@ -63,8 +68,11 @@ class AuthController < ApplicationController
 
           # В цикле пытаемся найти другие документы с таким именем доступные для записи в данной коллекции
           while user_info["A2"] != test_val
+            Rails.logger.info("[Auth#set_idhash] user_info not writed")
             user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx] if collection
+            Rails.logger.info("[Auth#set_idhash] next user_doc = #{user_doc.inspect}")
             user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
+            Rails.logger.info("[Auth#set_idhash] next user_info = #{user_info.inspect}")
             idx += 1
             
             user_info["A2"] = test_val
@@ -83,12 +91,16 @@ class AuthController < ApplicationController
             
             idhash = user_info["B1"] if user_info
             doc_key = user_doc.key
+            Rails.logger.info("[Auth#set_idhash] idhash = #{idhash}, doc_key = #{doc_key}")
 
             # Проверяем соответствие idhash и документа
-            if !TrustNetMember.find_by_idhash(idhash) || TrustNetMember.find_by_idhash_and_doc_key(idhash, doc_key)
+            # Пропускаем если idhash новый или если пара 
+            if TrustNetMember.find_by_idhash_and_doc_key(idhash, doc_key) || (!TrustNetMember.find_by_idhash(idhash) && !TrustNetMember.find_by_doc_key(doc_key))
+              Rails.logger.info("[Auth#set_idhash] check member OK: session[idhash] = #{idhash}, session[doc_key] = #{doc_key}")
               session[:idhash] = idhash
               session[:doc_key] = doc_key
             else
+              Rails.logger.info("[Auth#set_idhash] check member BAD: session[idhash] = , session[doc_key] = #{doc_key}")
               session[:idhash] = ''
               session[:doc_key] = doc_key
               user_doc = nil
@@ -98,6 +110,7 @@ class AuthController < ApplicationController
           end
         end
       else
+        Rails.logger.info("[Auth#set_idhash] user doc not found: create")
         user_doc, user_info, user_trust_votes, user_votes = create_user_doc(google_session)
         session[:doc_key] = user_doc.key if user_doc
       end
