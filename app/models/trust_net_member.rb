@@ -12,7 +12,7 @@ class TrustNetMember < ActiveRecord::Base
     if (idhash_exists && !doc_key_exists) || (!idhash_exists && doc_key_exists)
       model = self.new
       model.errors[:base] << I18n.t('errors.idhash_wrong_doc_key') if idhash_exists
-      model.errors[:base] << I18n.t('doc_key_wrong_idhash') if doc_key_exists
+      model.errors[:base] << I18n.t('errors.doc_key_wrong_idhash') if doc_key_exists
       model
     elsif model = find_by_idhash_and_doc_key(idhash, doc_key)
       model.update_attributes(:nick => nick)
