@@ -2,7 +2,7 @@
 %h3.center
   = link_to I18n.t("titles.home"), root_path
   = "-"
-  = link_to I18n.t("titles.user_info"), doc_info_user_path(:doc_key => @doc_key)
+  = link_to I18n.t("titles.user_info"), doc_info_user_path(:doc_key => @doc_key, :idhash => @idhash)
 %p.input-group
   %span.input-group-addon
     = I18n.t("user_info_page.idhash")

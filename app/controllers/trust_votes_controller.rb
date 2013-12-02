@@ -13,6 +13,7 @@ class TrustVotesController < ApplicationController
   def trust_to
     # Голоса доверия за данного пользователя
     @idhash = params[:idhash] if params[:idhash].present?
+    @doc_key = params[:doc_key] if params[:doc_key].present?
     @user_trust_votes = UserTrustNetVote.to_user(@idhash)
   end
 
