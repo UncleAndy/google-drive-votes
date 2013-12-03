@@ -188,7 +188,7 @@ class AuthController < ApplicationController
         
         doc_verify_votes[id] = true
         
-        break if row[0].blank? || row[1].blank? || row[2].blank? || row[3].blank?
+        break if row[0].blank? || row[1].blank? || row[2].blank?
         vote = UserVerifyVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(idhash, row[0], row[1])
         if vote
           vote.update_attributes({:vote_verify_level => row[2]}) if vote.vote_verify_level != row[2].to_i
