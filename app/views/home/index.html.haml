@@ -1,13 +1,14 @@
-%p.center
-  = link_to trust_net_path do
-    %button.btn.btn-primary.btn-lg= I18n.t("titles.trust_net")
-  = link_to user_path do
-    %button.btn.btn-primary.btn-lg= I18n.t("titles.user_cabinet")
-  = link_to auth_path do
-    - if session[:auth_token].present? && session[:refresh_token].present?
-      %button.btn.btn-success.btn-lg= I18n.t("titles.authorization")
-    - else
-      %button.btn.btn-warning.btn-lg= I18n.t("titles.authorization")
+.panel.panel-default
+  .panel-body.center
+    = link_to auth_path do
+      - if session[:auth_token].present? && session[:refresh_token].present?
+        %button.btn.btn-success.btn-lg= I18n.t("titles.authorization")
+      - else
+        %button.btn.btn-warning.btn-lg= I18n.t("titles.authorization")
+    = link_to user_path do
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.user_cabinet")
+    = link_to trust_net_path do
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.trust_net_results")
 
 %h2.center Сеть доверия на основе документов Google
 
@@ -62,13 +63,14 @@
 %p
   Получить результаты сети доверия очень просто - достаточно использовать адреса вида http://trustnet.gplvote.org/trust_net.json (для получения результатов в формате JSON) или http://trustnet.gplvote.org/trust_net.xml (для получения результатов в формате XML). Далее вы можете использовать их в соответствии с логикой своего приложения.
 
-%p.center
-  = link_to trust_net_path do
-    %button.btn.btn-primary.btn-lg= I18n.t("titles.trust_net")
-  = link_to user_path do
-    %button.btn.btn-primary.btn-lg= I18n.t("titles.user_cabinet")
-  = link_to auth_path do
-    - if session[:auth_token].present? && session[:refresh_token].present?
-      %button.btn.btn-success.btn-lg= I18n.t("titles.authorization")
-    - else
-      %button.btn.btn-warning.btn-lg= I18n.t("titles.authorization")
+.panel.panel-default
+  .panel-body.center
+    = link_to auth_path do
+      - if session[:auth_token].present? && session[:refresh_token].present?
+        %button.btn.btn-success.btn-lg= I18n.t("titles.authorization")
+      - else
+        %button.btn.btn-warning.btn-lg= I18n.t("titles.authorization")
+    = link_to user_path do
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.user_cabinet")
+    = link_to trust_net_path do
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.trust_net_results")

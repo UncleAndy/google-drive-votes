@@ -17,6 +17,11 @@ class AuthController < ApplicationController
   def login
     auth_token = @client.auth_code.get_token(params[:code], :redirect_uri => Settings.oauth2.redirect_url)
     session[:auth_token] = auth_token.token
+    if auth_token.expires_in.present?
+      session[:auth_token_ttl] = DateTime.now.to_i + auth_token.expires_in.to_i
+    else
+      session[:auth_token_ttl] = ''
+    end
     session[:refresh_token] = auth_token.refresh_token
     Rails.logger.info("AUTH: Auth token #{session[:auth_token]}")
     Rails.logger.info("AUTH: Refresh token #{session[:refresh_token]}")

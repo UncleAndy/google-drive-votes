@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
 class UserController < ApplicationController
+  before_filter :check_preauth, :only => [:new]
   before_filter :login_required
   
   def show

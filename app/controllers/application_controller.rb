@@ -53,19 +53,19 @@ class ApplicationController < ActionController::Base
   helper_method :show_idhash
   
   def google_action
-    counter = 5
+    counter = 3
     success = false
-    while counter >= 0 do
+    while counter > 0 do
       counter -= 1
       begin
         yield
         success = true
         break
-      rescue GoogleDrive::AuthenticationError
+      rescue GoogleDrive::AuthenticationError => e
         Rails.logger.info("GoogleDrive::AuthenticationError: try refresh token")
         GoogleUserDoc.creal_all_singletons
         refresh_token
-      rescue OAuth2::Error
+      rescue OAuth2::Error => e
         Rails.logger.info("OAuth2::Error: try refresh token")
         GoogleUserDoc.creal_all_singletons
         refresh_token
@@ -81,17 +81,27 @@ class ApplicationController < ActionController::Base
   end
 
   def refresh_token
+    Rails.logger.info("[refresh_token] Run")
     refresh_client_obj = OAuth2::Client.new(Settings.oauth2.client_id, Settings.oauth2.client_secret,
       :site => "https://accounts.google.com",
       :token_url => "/o/oauth2/token",
       :authorize_url => "/o/oauth2/auth")
+    Rails.logger.info("[refresh_token] Request for refresh access token.")
     refresh_access_token_obj = OAuth2::AccessToken.new(refresh_client_obj,
                                                        session[:auth_token],
                                                        {refresh_token: session[:refresh_token]})
     refresh_access_token_obj.refresh!
+    Rails.logger.info("[refresh_token] New access token = #{refresh_access_token_obj.token}")
+    Rails.logger.info("[refresh_token] Access token ttl = #{refresh_access_token_obj.expires_in.to_i}")
     session[:auth_token] = refresh_access_token_obj.token
-    refresh_token = refresh_access_token_obj.refresh_token
-    session[:refresh_token] = refresh_token if refresh_token.present?
+    if refresh_access_token_obj.expires_in.present?
+      session[:auth_token_ttl] = DateTime.now.to_i + refresh_access_token_obj.expires_in.to_i
+    else
+      session[:auth_token_ttl] = ''
+    end
+    refresh_token_str = refresh_access_token_obj.refresh_token
+    session[:refresh_token] = refresh_token_str if refresh_token_str.present?
+    Rails.logger.info("[refresh_token] Finished")
   end
   
   private
@@ -103,6 +113,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def check_preauth
+    return google_action do
+      Rails.logger.info("[check_preauth] Run for #{session.inspect}")
+      GoogleUserDoc.init(session)
+      user_info = GoogleUserDoc.doc_info_page
+    end
+  end
+  
   def gon_init
     gon.is_ok = true
   end

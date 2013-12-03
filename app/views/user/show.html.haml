@@ -1,6 +1,7 @@
 %h2.center= I18n.t("titles.user_cabinet")
-%h3.center
-  = link_to I18n.t("titles.home"), root_path
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
 %p.input-group
   %span.input-group-addon
     = I18n.t("your.nick")

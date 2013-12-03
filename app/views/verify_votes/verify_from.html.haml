@@ -3,13 +3,14 @@
     = I18n.t("titles.other_user_verify_votes")
   - else
     = I18n.t("titles.user_verify_votes")
-%h3.center
-  = link_to I18n.t("titles.home"), root_path
-  = "-"
-  - if params[:idhash].present?
-    = link_to I18n.t("titles.user_info"), doc_info_user_path(:doc_key => @doc_key, :idhash => @idhash)
-  - else
-    = link_to I18n.t("titles.user_cabinet"), user_path
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
+  %li
+    - if params[:idhash].present?
+      = link_to I18n.t("titles.user_info"), doc_info_user_path(:doc_key => @doc_key, :idhash => @idhash)
+    - else
+      = link_to I18n.t("titles.user_cabinet"), user_path
 - if params[:idhash].present?
   %p.input-group
     %span.input-group-addon
@@ -46,3 +47,5 @@
           = spaced_str(vote.vote_doc_key)
       %td.center
         = vote.vote_verify_level
+.center
+  = link_to "Назад", :back, :class => 'btn btn-default'

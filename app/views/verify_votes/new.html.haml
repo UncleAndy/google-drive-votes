@@ -1,10 +1,11 @@
 %h2.center= I18n.t("titles.user_verify_vote_new")
-%h3.center
-  = link_to I18n.t("titles.home"), root_path
-  = "-"
-  = link_to I18n.t("titles.user_cabinet"), user_path
-  = "-"
-  = link_to I18n.t("titles.user_trust_votes"), user_verify_votes_path
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
+  %li
+    = link_to I18n.t("titles.user_cabinet"), user_path
+  %li
+    = link_to I18n.t("titles.user_trust_votes"), user_verify_votes_path
 
 .panel.panel-default
   .panel-heading
@@ -60,3 +61,4 @@
             %div{ id: 'slider-range-verify' }
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'
+    = link_to "Назад", :back, :class => 'btn btn-default'

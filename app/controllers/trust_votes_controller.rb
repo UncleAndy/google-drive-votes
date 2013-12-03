@@ -1,4 +1,5 @@
 class TrustVotesController < ApplicationController
+  before_filter :check_preauth, :only => [:new, :edit]
   before_filter :login_required
   before_filter :set_user_data
   

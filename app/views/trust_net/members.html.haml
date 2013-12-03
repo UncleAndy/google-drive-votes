@@ -1,8 +1,9 @@
 %h2.center= I18n.t("titles.trust_net_members")
-%h3.center
-  = link_to I18n.t("titles.home"), root_path
-  = "-"
-  = link_to I18n.t("titles.trust_net"), trust_net_path
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
+  %li
+    = link_to I18n.t("titles.trust_net"), trust_net_path
 %br
 %table.table.table-bordered.table-hover.table-condensed
   %tr
@@ -18,3 +19,5 @@
       %td.center
         = link_to "http://spreadsheets.google.com/ccc?key=#{row.doc_key}", :target => '_blank' do
           = row.doc_key
+.center
+  = link_to "Назад", :back, :class => 'btn btn-default'

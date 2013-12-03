@@ -1,6 +1,7 @@
 %h2.center= I18n.t("titles.user_cabinet")
-%h3.center
-  = link_to I18n.t("titles.home"), root_path
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
 %p.input-group
   %span.input-group-addon
     = I18n.t("user_info_page.idhash")
@@ -58,8 +59,5 @@
     = link_to to_user_trust_votes_path(:idhash => member.idhash, :doc_key => member.doc_key) do
       %button.btn.btn-primary.btn-lg= I18n.t("titles.to_other_user_trust_votes")
 %br
-%p{ :align => 'center' }
-  = link_to :back do
-    %button.btn.btn-default
-      %span.glyphicon.glyphicon-backward
-      = "На предыдущую страницу"
+.center
+  = link_to "Назад", :back, :class => 'btn btn-default'

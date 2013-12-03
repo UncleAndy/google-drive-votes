@@ -1,8 +1,9 @@
 %h2.center= I18n.t("titles.user_verify_votes")
-%h3.center
-  = link_to I18n.t("titles.home"), root_path
-  = "-"
-  = link_to I18n.t("titles.user_cabinet"), user_path
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
+  %li
+    = link_to I18n.t("titles.user_cabinet"), user_path
 %p
   = link_to new_user_verify_vote_path do
     %button.btn.btn-primary
@@ -34,3 +35,5 @@
         = link_to user_verify_vote_path(vote.complex_id), :method => :delete, :data => { :confirm => I18n.t('are_you_sure') } do
           %button.btn.btn-warning
             = I18n.t('delete')
+.center
+  = link_to "Назад", :back, :class => 'btn btn-default'

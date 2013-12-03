@@ -1,6 +1,7 @@
 %h2.center= I18n.t("titles.trust_net")
-%h3.center
-  = link_to I18n.t("titles.home"), root_path
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
 %table.invis.wide
   %tr
     %td.right{:width => '50%'}= I18n.t("trust_net.iteration_count")

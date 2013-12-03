@@ -1,10 +1,11 @@
 %h2.center= I18n.t("titles.user_trust_vote_new")
-%h3.center
-  = link_to I18n.t("titles.home"), root_path
-  = "-"
-  = link_to I18n.t("titles.user_cabinet"), user_path
-  = "-"
-  = link_to I18n.t("titles.user_trust_votes"), user_trust_votes_path
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
+  %li
+    = link_to I18n.t("titles.user_cabinet"), user_path
+  %li
+    = link_to I18n.t("titles.user_trust_votes"), user_trust_votes_path
   
 = simple_form_for :vote, :url => user_trust_vote_path(@vote.vote_idhash), :method => :put, :html => {:autocomplete => "off"} do |f|
   .center
@@ -23,13 +24,14 @@
       %table.white.wide.padded
         %tr
           %td.left{:width => '20%'}
-            Не довереяю
+            Не доверяю
           %td.center
             = f.input_field :vote_trust_level, required: true, label: false, id: 'trust-level', size: 4, style: 'text-align: center;', readonly: true
           %td.right{:width => '20%'}
-            Польностью доверияю
+            Польностью доверяю
         %tr
           %td{:colspan => 3}
             %div{ id: 'slider-range-trust'}
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'
+    = link_to "Назад", :back, :class => 'btn btn-default'
