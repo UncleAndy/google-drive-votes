@@ -9,7 +9,7 @@ class UserController < ApplicationController
     @doc_key = session[:doc_key]
     @member = TrustNetMember.find_by_idhash_and_doc_key(@idhash, @doc_key)
     @nick = @member.nick if @member
-    @user = UserOption.find_or_create_by_idhash(session[:idhash])
+    @user = UserOption.find_or_create_by_idhash_and_doc_key(@idhash, @doc_key)
   end
 
   def new
