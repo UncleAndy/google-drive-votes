@@ -64,9 +64,11 @@ class AuthController < ApplicationController
           test_val = rand().to_s
           user_info["A2"] = test_val
           user_info.save
+          user_info.reload
           idx = 1
 
           # В цикле пытаемся найти другие документы с таким именем доступные для записи в данной коллекции
+          Rails.logger.info("[Auth#set_idhash] check cell A2 = #{user_info["A2"]} and test_val = #{test_val}")
           while user_info["A2"] != test_val
             Rails.logger.info("[Auth#set_idhash] user_info not writed")
             user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx] if collection
@@ -77,6 +79,7 @@ class AuthController < ApplicationController
             
             user_info["A2"] = test_val
             user_info.save
+            user_info.reload
           end
           
           if user_info["A2"] != test_val
