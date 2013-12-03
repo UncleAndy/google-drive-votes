@@ -1,8 +1,8 @@
 %h2.center
   - if params[:idhash].present?
-    = I18n.t("titles.to_other_user_verify_votes")
+    = I18n.t("titles.other_user_verify_votes")
   - else
-    = I18n.t("titles.to_user_verify_votes")
+    = I18n.t("titles.user_verify_votes")
 %h3.center
   = link_to I18n.t("titles.home"), root_path
   = "-"
@@ -31,18 +31,18 @@
 %table.table.table-bordered.table-hover.table-condensed
   %tr
     %th.center
-      = I18n.t('user_trust_net.owner_id')
+      = I18n.t('user_trust_net.id')
     %th.center
-      = I18n.t('user_trust_net.owner_doc_key')
+      = I18n.t('user_trust_net.doc_key')
     %th.center.col-sm-1
       = I18n.t('user_trust_net.verify_level')
-  - @user_trust_votes.each do |vote|
+  - @user_verify_votes.each do |vote|
     %tr
       %td.center
-        = link_to doc_info_user_path(:doc_key => vote.doc_key, :idhash => vote.idhash) do
-          = show_idhash(vote.idhash)
+        = link_to doc_info_user_path(:doc_key => vote.vote_doc_key, :idhash => vote.vote_idhash) do
+          = show_idhash(vote.vote_idhash)
       %td.center
-        = link_to "http://spreadsheets.google.com/ccc?key=#{vote.doc_key}", :target => '_blank' do
-          = spaced_str(vote.doc_key)
+        = link_to "http://spreadsheets.google.com/ccc?key=#{vote.vote_doc_key}", :target => '_blank' do
+          = spaced_str(vote.vote_doc_key)
       %td.center
         = vote.vote_verify_level

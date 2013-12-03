@@ -3,7 +3,7 @@ class TrustVotesController < ApplicationController
   before_filter :set_user_data
   
   def index
-    @user_trust_votes = UserTrustNetVote.by_owner(@idhash, @doc_key)
+    @user_trust_votes = UserTrustVote.by_owner(@idhash, @doc_key)
   end
 
   def show
@@ -13,29 +13,14 @@ class TrustVotesController < ApplicationController
   def trust_to
     # Голоса доверия за данного пользователя
     @idhash = params[:idhash] if params[:idhash].present?
-    @doc_key = params[:doc_key] if params[:doc_key].present?
-    @user_trust_votes = UserTrustNetVote.to_user(@idhash)
+    @user_trust_votes = UserTrustVote.to_user(@idhash)
   end
 
   def trust_from
     # Голоса доверия от данного пользователя (не текущего)
     @idhash = params[:idhash] if params[:idhash].present?
     @doc_key = params[:doc_key] if params[:doc_key].present?
-    @user_trust_votes = UserTrustNetVote.by_owner(@idhash, @doc_key)
-  end
-
-  def verify_to
-    # Голоса верификации за данного пользователя
-    @idhash = params[:idhash] if params[:idhash].present?
-    @doc_key = params[:doc_key] if params[:doc_key].present?
-    @user_trust_votes = UserTrustNetVote.to_user_and_doc(@idhash, @doc_key)
-  end
-
-  def verify_from
-    # Голоса верификации от данного пользователя (не текущего)
-    @idhash = params[:idhash] if params[:idhash].present?
-    @doc_key = params[:doc_key] if params[:doc_key].present?
-    @user_trust_votes = UserTrustNetVote.by_owner(@idhash, @doc_key)
+    @user_trust_votes = UserTrustVote.by_owner(@idhash, @doc_key)
   end
   
   def new
@@ -45,63 +30,47 @@ class TrustVotesController < ApplicationController
   
   def create
     params[:vote][:vote_idhash] = params[:vote][:vote_idhash].delete(' ')
-    params[:vote][:vote_doc_key] = params[:vote][:vote_doc_key].delete(' ')
     if check_data
-      # Сначала проверяем что уже нет строки с таким идентификатором пользователя или документа
-      founded_idhash = UserTrustNetVote.find_by_idhash_and_vote_idhash(session[:idhash], params[:vote][:vote_idhash])
-      founded_doc_key = UserTrustNetVote.find_by_idhash_and_vote_doc_key(session[:idhash], params[:vote][:vote_doc_key])
-
-      update_required = founded_idhash.present? && founded_doc_key.present? && founded_idhash.id == founded_doc_key.id
-      if update_required || founded_doc_key.blank?
-        trust_votes = nil
-        row_num = 1
-        return false if !google_action do
-          GoogleUserDoc.init(session)
-          trust_votes = GoogleUserDoc.doc_trust_votes_page
-          # Находим в документе строку с таким идентификатором и документом или последнюю свободную
-          while trust_votes["A#{row_num}"].present? &&
-                (trust_votes["A#{row_num}"] != params[:vote][:vote_idhash] || trust_votes["B#{row_num}"] != params[:vote][:vote_doc_key])
-            row_num += 1
-          end
-
-          trust_votes["A#{row_num}"] = params[:vote][:vote_idhash]
-          trust_votes["B#{row_num}"] = params[:vote][:vote_doc_key]
-          trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
-          trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
-          trust_votes.save
+      # Сначала проверяем что уже нет строки с таким идентификатором пользователя
+      trust_votes = nil
+      row_num = 1
+      return false if !google_action do
+        GoogleUserDoc.init(session)
+        trust_votes = GoogleUserDoc.doc_trust_votes_page
+        # Находим в документе строку с таким идентификатором и документом или последнюю свободную
+        while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != params[:vote][:vote_idhash]
+          row_num += 1
         end
-        
 
-        if trust_votes && trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
-          if update_required
-            founded_idhash.update_attributes({
-                                    :vote_verify_level => params[:vote][:vote_verify_level],
-                                    :vote_trust_level => params[:vote][:vote_trust_level]})
-          else
-            UserTrustNetVote.create({
-                                    :idhash => @idhash,
-                                    :doc_key => @doc_key,
-                                    :vote_idhash => params[:vote][:vote_idhash],
-                                    :vote_doc_key => params[:vote][:vote_doc_key],
-                                    :vote_verify_level => params[:vote][:vote_verify_level],
-                                    :vote_trust_level => params[:vote][:vote_trust_level]
-                                    })
-          end
+        trust_votes["A#{row_num}"] = params[:vote][:vote_idhash]
+        trust_votes["B#{row_num}"] = params[:vote][:vote_trust_level]
+        trust_votes.save
+      end
+
+
+      if trust_votes && trust_votes["A#{row_num}"] == params[:vote][:vote_idhash]
+        founded_idhash = UserTrustVote.find_by_idhash_and_doc_key_and_vote_idhash(session[:idhash], session[:doc_key], params[:vote][:vote_idhash])
+        if founded_idhash.present?
+          founded_idhash.update_attributes({ :vote_trust_level => params[:vote][:vote_trust_level] })
         else
-          flash[:alert] = I18n.t("errors.google_save_error")
+          UserTrustVote.create({
+                                  :idhash => @idhash,
+                                  :doc_key => @doc_key,
+                                  :vote_idhash => params[:vote][:vote_idhash],
+                                  :vote_trust_level => params[:vote][:vote_trust_level]
+                                  })
         end
-      elsif founded_doc_key
-        flash[:alert] = I18n.t("errors.vote_idhash_alredy_present")
+      else
+        flash[:alert] = I18n.t("errors.google_save_error")
       end
     end
     redirect_to user_trust_votes_path
   end
 
   def edit
-    @target_idhash, @target_doc_key = UserTrustNetVote.parse_complex_id(params[:id])
-    @vote = UserTrustNetVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(@idhash, @target_idhash, @target_doc_key)
+    @target_idhash = params[:id]
+    @vote = UserTrustVote.find_by_idhash_and_doc_key_and_vote_idhash(@idhash, @doc_key, @target_idhash)
     if @vote
-      gon.verify_level = @vote.vote_verify_level
       gon.trust_level = @vote.vote_trust_level
     else
       flash[:alert] = I18n.t("errors.user_trust_vote_not_found")
@@ -111,8 +80,8 @@ class TrustVotesController < ApplicationController
 
   def update
     if check_data(true)
-      @target_idhash, @target_doc_key = UserTrustNetVote.parse_complex_id(params[:id])
-      @vote = UserTrustNetVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(@idhash, @target_idhash, @target_doc_key)
+      @target_idhash = params[:id]
+      @vote = UserTrustVote.find_by_idhash_and_doc_key_and_vote_idhash(@idhash, @doc_key, @target_idhash)
       @vote.update_attributes(params[:vote]) if @vote
 
       return false if !google_action do
@@ -120,13 +89,12 @@ class TrustVotesController < ApplicationController
         trust_votes = GoogleUserDoc.doc_trust_votes_page
         # Находим строку с данным голосом и прописываем его изменение
         row_num = 1
-        while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != @target_idhash && trust_votes["B#{row_num}"] != @target_doc_key
+        while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != @target_idhash
           row_num += 1
         end
 
         if trust_votes["A#{row_num}"].present?
-          trust_votes["C#{row_num}"] = params[:vote][:vote_verify_level]
-          trust_votes["D#{row_num}"] = params[:vote][:vote_trust_level]
+          trust_votes["B#{row_num}"] = params[:vote][:vote_trust_level]
           trust_votes.save
         end
       end
@@ -136,8 +104,8 @@ class TrustVotesController < ApplicationController
 
   def destroy
     # Сначала удаляем строку из документа
-    @target_idhash, @target_doc_key = UserTrustNetVote.parse_complex_id(params[:id])
-    @vote = UserTrustNetVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(@idhash, @target_idhash, @target_doc_key)
+    @target_idhash = params[:id]
+    @vote = UserTrustVote.find_by_idhash_and_doc_key_and_vote_idhash(@idhash, @doc_key, @target_idhash)
     if @vote
       return false if !google_action do
         GoogleUserDoc.init(session)
@@ -145,11 +113,11 @@ class TrustVotesController < ApplicationController
 
         # Ищем строку в документе
         row_num = 1
-        while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != @target_idhash && trust_votes["B#{row_num}"] != @target_doc_key
+        while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != @target_idhash
           row_num += 1
         end
 
-        if trust_votes["A#{row_num}"] == @target_idhash && trust_votes["B#{row_num}"] == @target_doc_key
+        if trust_votes["A#{row_num}"] == @target_idhash
           # Сдвигаем все последующие строки на 1 вверх
           while trust_votes["A#{row_num}"].present?
             trust_votes["A#{row_num}"] = trust_votes["A#{row_num+1}"]
@@ -180,12 +148,6 @@ class TrustVotesController < ApplicationController
   def check_data(without_ids = false)
     if !without_ids && params[:vote][:vote_idhash] !~ /^[0-9a-fA-F]{64}$/
       flash[:alert] = I18n.t('errors.idhash_bad_format')
-      false
-    elsif !without_ids && params[:vote][:vote_doc_key].blank?
-      flash[:alert] = I18n.t('errors.doc_key_cannot_be_blank')
-      false
-    elsif params[:vote][:vote_verify_level] !~ /^(\-|)[0-9]+$/ || !(-10..10).include?(params[:vote][:vote_verify_level].to_i)
-      flash[:alert] = I18n.t('errors.verify_level_bad_value')
       false
     elsif params[:vote][:vote_trust_level] !~ /^(\-|)[0-9]+$/ || !(-10..10).include?(params[:vote][:vote_trust_level].to_i)
       flash[:alert] = I18n.t('errors.trust_level_bad_value')

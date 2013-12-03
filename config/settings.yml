@@ -8,7 +8,8 @@ google:
     main_doc: "GPLVote основной документ пользователя"
     main_doc_pages:
       user_info: "Данные пользователя"
-      trust_net: "Сеть доверия"
+      verify_votes: "Верификация"
+      trust_votes: "Доверие"
       votes: "Голосования"
   main:
     trust_net: "GPLVote сеть доверия"

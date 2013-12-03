@@ -48,8 +48,13 @@
         %td.left= f.input_field :odnoklassniki, required: false, :disabled => true, :value => options.odnoklassniki
   %br
   %p{ :align => 'center' }
+    = link_to from_user_verify_votes_path(:idhash => member.idhash, :doc_key => member.doc_key) do
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.from_other_user_verify_votes")
     = link_to from_user_trust_votes_path(:idhash => member.idhash, :doc_key => member.doc_key) do
-      %button.btn.btn-primary.btn-lg= I18n.t("titles.other_user_trust_votes")
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.from_other_user_trust_votes")
+  %p{ :align => 'center' }
+    = link_to to_user_verify_votes_path(:idhash => member.idhash, :doc_key => member.doc_key) do
+      %button.btn.btn-primary.btn-lg= I18n.t("titles.to_other_user_verify_votes")
     = link_to to_user_trust_votes_path(:idhash => member.idhash, :doc_key => member.doc_key) do
       %button.btn.btn-primary.btn-lg= I18n.t("titles.to_other_user_trust_votes")
 %br

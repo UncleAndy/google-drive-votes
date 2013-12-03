@@ -11,30 +11,21 @@
   %tr
     %th.center
       = I18n.t('user_trust_net.id')
-    %th.center
-      = I18n.t('user_trust_net.doc_key')
-    %th.center.col-sm-1
-      = I18n.t('user_trust_net.verify_level')
     %th.center.col-sm-1
       = I18n.t('user_trust_net.trust_level')
     %th.center.col-sm-2
       = I18n.t('actions')
   - @user_trust_votes.each do |vote|
     %tr
-      %td
-        = link_to doc_info_user_path(:doc_key => vote.vote_doc_key, :idhash => vote.vote_idhash) do
+      %td.center
+        = link_to doc_info_user_path(:idhash => vote.vote_idhash) do
           = show_idhash(vote.vote_idhash)
-      %td.center
-        = link_to "http://spreadsheets.google.com/ccc?key=#{vote.vote_doc_key}", :target => '_blank' do
-          = spaced_str(vote.vote_doc_key)
-      %td.center
-        = vote.vote_verify_level
       %td.center
         = vote.vote_trust_level
       %td.center
-        = link_to edit_user_trust_vote_path(vote.complex_id) do
+        = link_to edit_user_trust_vote_path(vote.vote_idhash) do
           %button.btn.btn-primary
             = I18n.t('edit')
-        = link_to user_trust_vote_path(vote.complex_id), :method => :delete, :data => { :confirm => I18n.t('are_you_sure') } do
+        = link_to user_trust_vote_path(vote.vote_idhash), :method => :delete, :data => { :confirm => I18n.t('are_you_sure') } do
           %button.btn.btn-warning
             = I18n.t('delete')

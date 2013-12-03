@@ -16,24 +16,22 @@ class TrustNet
     next_result = {:trust => {}}
     TrustNetMember.all.each do |member|
       member_id = "#{member.idhash}:#{member.doc_key}"
-      processed_idhash = {}
-      UserTrustNetVote.by_owner(member.idhash, member.doc_key).each do |vote|
+
+      # Учет доверия для данного участника с предыдущего цикла
+      correction = 1.0
+      if temp_result[:trust][member.idhash].present? && temp_result[:trust][member.idhash][:trust_level].present?
+        correction = (temp_result[:trust][member.idhash][:trust_level] + 10.0) / 20.0;
+      end
+
+      # Учет уровня верификации
+      UserVerifyVote.by_owner(member.idhash, member.doc_key).each do |vote|
         if vote.vote_idhash != member.idhash
           # Не учитываем голоса, поданые за отсутствующих в списке участников
           next if !TrustNetMember.find_by_idhash(vote.vote_idhash)
           
           vote_id = "#{vote.vote_idhash}:#{vote.vote_doc_key}"
           
-          verify_level = limit_levels(vote.vote_verify_level)
-          trust_level = limit_levels(vote.vote_trust_level)
-
-          correction = 1.0
-          if temp_result[:trust][vote.vote_idhash].present? && temp_result[:trust][vote.vote_idhash][:trust_level].present?
-            correction = (temp_result[:trust][vote.vote_idhash][:trust_level] + 10.0) / 20.0;
-          end
-
-          verify_level *= correction
-          trust_level *= correction
+          verify_level = limit_levels(vote.vote_verify_level) * correction
 
           if next_result[vote_id].present?
             next_result[vote_id][:verify_level] =
@@ -45,25 +43,28 @@ class TrustNet
                                     :verify_level => verify_level.to_f,
                                     :count => 1}
           end
+        end
+      end
 
-          # Голос о доверии учитывается только если он первый в списке голосов данного пользователя
-          if !processed_idhash[vote.vote_idhash]
-            if next_result[:trust][vote.vote_idhash].present?
-              next_result[:trust][vote.vote_idhash][:trust_level] =
-                  (next_result[:trust][vote.vote_idhash][:trust_level].to_f * next_result[:trust][vote.vote_idhash][:count] + trust_level.to_f)/(next_result[:trust][vote.vote_idhash][:count] + 1)
-              next_result[:trust][vote.vote_idhash][:count] += 1
-            else
-              next_result[:trust][vote.vote_idhash] = {:idhash => vote.vote_idhash,
-                                      :trust_level => trust_level.to_f,
-                                      :count => 1}
-            end
+      # Учет уровней доверия
+      UserTrustVote.by_owner(member.idhash, member.doc_key).each do |vote|
+        if vote.vote_idhash != member.idhash
+          trust_level = limit_levels(vote.vote_trust_level) * correction
+
+          if next_result[:trust][vote.vote_idhash].present?
+            next_result[:trust][vote.vote_idhash][:trust_level] =
+                (next_result[:trust][vote.vote_idhash][:trust_level].to_f * next_result[:trust][vote.vote_idhash][:count] + trust_level.to_f)/(next_result[:trust][vote.vote_idhash][:count] + 1)
+            next_result[:trust][vote.vote_idhash][:count] += 1
+          else
+            next_result[:trust][vote.vote_idhash] = {:idhash => vote.vote_idhash,
+                                    :trust_level => trust_level.to_f,
+                                    :count => 1}
           end
-          
-          processed_idhash[vote.vote_idhash] = true
         end
       end
     end
 
+    
     # Для всех, у кого количество голосов ниже определенного значения, учитываем всех до этого значения, как указавших уровень 0-0
     next_result.keys.each do |id|
       next if id == :trust || id == 'trust'
@@ -71,7 +72,7 @@ class TrustNet
         next_result[id][:verify_level] = next_result[id][:verify_level] * next_result[id][:count] / Settings.trust_net_options.average_limit.to_f
       end
 
-      # Устанавливаем значение уровня доверия из таблицы доверия
+      # Устанавливаем значение уровня доверия из таблицы доверия (для совместимости результата)
       idhash, doc_key = id.split(':')
       next_result[id][:trust_level] = next_result[:trust][idhash][:trust_level]
     end

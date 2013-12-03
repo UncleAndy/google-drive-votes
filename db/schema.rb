@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131202184957) do
+ActiveRecord::Schema.define(:version => 20131203125307) do
 
   create_table "trust_net_members", :force => true do |t|
     t.string   "idhash",     :limit => 64,  :null => false
@@ -62,18 +62,29 @@ ActiveRecord::Schema.define(:version => 20131202184957) do
 
   add_index "user_options", ["idhash", "doc_key"], :name => "index_user_options_on_idhash_and_doc_key", :unique => true
 
-  create_table "user_trust_net_votes", :force => true do |t|
+  create_table "user_trust_votes", :force => true do |t|
+    t.string   "idhash",           :limit => 64, :null => false
+    t.string   "doc_key",          :limit => 64, :null => false
+    t.string   "vote_idhash",      :limit => 64, :null => false
+    t.integer  "vote_trust_level",               :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+  end
+
+  add_index "user_trust_votes", ["idhash", "doc_key"], :name => "index_user_trust_votes_on_idhash_and_doc_key"
+  add_index "user_trust_votes", ["vote_idhash"], :name => "index_user_trust_votes_on_vote_idhash"
+
+  create_table "user_verify_votes", :force => true do |t|
     t.string   "idhash",            :limit => 64, :null => false
     t.string   "vote_idhash",       :limit => 64, :null => false
     t.string   "vote_doc_key",      :limit => 64, :null => false
     t.integer  "vote_verify_level",               :null => false
-    t.integer  "vote_trust_level",                :null => false
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
     t.string   "doc_key",           :limit => 64, :null => false
   end
 
-  add_index "user_trust_net_votes", ["idhash", "doc_key", "vote_idhash", "vote_doc_key"], :name => "index_utnv_id_vid_vdoc_key", :unique => true
-  add_index "user_trust_net_votes", ["vote_idhash", "vote_doc_key"], :name => "index_user_trust_net_votes_on_vote_idhash_and_vote_doc_key"
+  add_index "user_verify_votes", ["idhash", "doc_key", "vote_idhash", "vote_doc_key"], :name => "index_utnv_id_vid_vdoc_key", :unique => true
+  add_index "user_verify_votes", ["vote_idhash", "vote_doc_key"], :name => "index_user_trust_net_votes_on_vote_idhash_and_vote_doc_key"
 
 end

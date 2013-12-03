@@ -6,32 +6,11 @@
   = "-"
   = link_to I18n.t("titles.user_trust_votes"), user_trust_votes_path
   
-= simple_form_for :vote, :url => user_trust_vote_path(@vote.complex_id), :method => :put, :html => {:autocomplete => "off"} do |f|
+= simple_form_for :vote, :url => user_trust_vote_path(@vote.vote_idhash), :method => :put, :html => {:autocomplete => "off"} do |f|
   .center
     = f.input :vote_idhash, required: false, disabled: true, :input_html => {:size=> '76', :class=>'center'}
     = link_to "проверка идентификатора пользователя", idhash_check_user_path, :target => "_blank"
-    = f.input :vote_doc_key, required: false, disabled: true, :input_html => {:class=>'center'}
   %br
-  .panel.panel-default
-    .panel-heading
-      %b
-        Уровень верификации
-    .panel-body.center
-      %p
-        Своим голосом вы должны удостоверить степень вашей уверенности что реальный человек имеет указанный им
-        идентификатор (в соответствии с его персональными данными, которые он должен вам предоставить) и что
-        именно он имеет доступ к своему документу с указанным им идентификатором.
-      %table.white.wide.padded
-        %tr
-          %td.left{:width => '20%'}
-            Уверен в обратном
-          %td.center
-            = f.input_field :vote_verify_level, required: true, label: false, id: 'verify-level', size: 4, style: 'text-align: center;', readonly: true
-          %td.right{:width => '20%'}
-            Польностью уверен
-        %tr
-          %td{:colspan => 3}
-            %div{ id: 'slider-range-verify' }
   .panel.panel-default
     .panel-heading
       %b

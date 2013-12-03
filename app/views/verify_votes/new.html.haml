@@ -1,10 +1,10 @@
-%h2.center= I18n.t("titles.user_trust_vote_new")
+%h2.center= I18n.t("titles.user_verify_vote_new")
 %h3.center
   = link_to I18n.t("titles.home"), root_path
   = "-"
   = link_to I18n.t("titles.user_cabinet"), user_path
   = "-"
-  = link_to I18n.t("titles.user_trust_votes"), user_trust_votes_path
+  = link_to I18n.t("titles.user_trust_votes"), user_verify_votes_path
 
 .panel.panel-default
   .panel-heading
@@ -33,29 +33,30 @@
       %br
       %input{ :type => 'text', :id => 'birth_date'}
   
-= simple_form_for :vote, :url => user_trust_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_trust_vote_form' } do |f|
+= simple_form_for :vote, :url => user_verify_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_trust_vote_form' } do |f|
   .center
     = f.input :vote_idhash, :input_html => { id: 'new_vote_idhash_field' }, required: true
+    = f.input :vote_doc_key, required: true
   %br
   .panel.panel-default
     .panel-heading
       %b
-        Уровень доверия
+        Уровень верификации
     .panel-body.center
       %p
-        Данным своим голосом вы должны указать насколько вы доверяете данному человеку при удостоверении им
-        других людей. Например, если вы уверены, что этот человек установил высокий уровень верификации
-        несуществующим в реальности людям, то, уровень доверия ему имеет смысл сделать минимальным.
+        Своим голосом вы должны удостоверить степень вашей уверенности в том, что именно данный реальный человек,
+        с указанными выше персональными данными (которые он должен вам предоставить), имеет доступ к документу
+        с указанным выше идентификатором.
       %table.white.wide.padded
         %tr
           %td.left{:width => '20%'}
-            Не довереяю
+            Уверен в обратном
           %td.center
-            = f.input_field :vote_trust_level, required: true, label: false, id: 'trust-level', size: 4, style: 'text-align: center;', readonly: true
+            = f.input_field :vote_verify_level, required: true, label: false, id: 'verify-level', size: 4, style: 'text-align: center;', readonly: true
           %td.right{:width => '20%'}
-            Польностью доверияю
+            Польностью уверен
         %tr
           %td{:colspan => 3}
-            %div{ id: 'slider-range-trust'}
+            %div{ id: 'slider-range-verify' }
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'

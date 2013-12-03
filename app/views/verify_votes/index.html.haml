@@ -1,0 +1,36 @@
+%h2.center= I18n.t("titles.user_verify_votes")
+%h3.center
+  = link_to I18n.t("titles.home"), root_path
+  = "-"
+  = link_to I18n.t("titles.user_cabinet"), user_path
+%p
+  = link_to new_user_verify_vote_path do
+    %button.btn.btn-primary
+      = I18n.t('new')
+%table.table.table-bordered.table-hover.table-condensed
+  %tr
+    %th.center
+      = I18n.t('user_trust_net.id')
+    %th.center
+      = I18n.t('user_trust_net.doc_key')
+    %th.center.col-sm-1
+      = I18n.t('user_trust_net.verify_level')
+    %th.center.col-sm-2
+      = I18n.t('actions')
+  - @user_verify_votes.each do |vote|
+    %tr
+      %td
+        = link_to doc_info_user_path(:doc_key => vote.vote_doc_key, :idhash => vote.vote_idhash) do
+          = show_idhash(vote.vote_idhash)
+      %td.center
+        = link_to "http://spreadsheets.google.com/ccc?key=#{vote.vote_doc_key}", :target => '_blank' do
+          = spaced_str(vote.vote_doc_key)
+      %td.center
+        = vote.vote_verify_level
+      %td.center
+        = link_to edit_user_verify_vote_path(vote.complex_id) do
+          %button.btn.btn-primary
+            = I18n.t('edit')
+        = link_to user_verify_vote_path(vote.complex_id), :method => :delete, :data => { :confirm => I18n.t('are_you_sure') } do
+          %button.btn.btn-warning
+            = I18n.t('delete')

@@ -67,7 +67,11 @@ class UserController < ApplicationController
 
   def doc_info
     @doc_key = params[:doc_key]
-    @user_member = TrustNetMember.find_by_doc_key(@doc_key) if @doc_key
+    if @doc_key.blank? && params[:idhash].present?
+      @user_member = TrustNetMember.order('created_at desc').where(:idhash => params[:idhash]).first
+    else
+      @user_member = TrustNetMember.find_by_doc_key(@doc_key) if @doc_key
+    end
     if @user_member
       @idhash = @user_member.idhash
       @nick = @user_member.nick

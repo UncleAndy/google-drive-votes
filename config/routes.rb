@@ -7,12 +7,16 @@ GoogleDriveVotes::Application.routes.draw do
   end
 
   resource :user, :controller => 'user' do
+    resources :verify_votes do
+      collection do
+        get :verify_to
+        get :verify_from
+      end
+    end
     resources :trust_votes do
       collection do
         get :trust_to
         get :trust_from
-        get :verify_to
-        get :verify_from
       end
     end
     member do
