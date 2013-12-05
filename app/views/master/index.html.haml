@@ -1,0 +1,15 @@
+%p
+  = link_to '#' do
+    %button.btn.btn-success.btn-wide= I18n.t("master.actions.view_me")
+%p
+  %table.invis.wide
+    %tr
+      %td{:width => '50%'}
+        = link_to '#' do
+          %button.btn.btn-info.btn-wide= I18n.t("master.actions.verify_other")
+      %td
+        = link_to '#' do
+          %button.btn.btn-info.btn-wide= I18n.t("master.actions.trust_other")
+%p
+  = link_to '#' do
+    %button.btn.btn-default.btn-wide= I18n.t("master.actions.do_vote")

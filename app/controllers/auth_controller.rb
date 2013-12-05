@@ -51,7 +51,7 @@ class AuthController < ApplicationController
     user_verify_votes = nil
     user_votes = nil
     if token.present?
-      Rails.logger.info("[Auth#set_idhash] token present")
+      Rails.logger.info("[Auth#se4t_idhash] token present")
       google_action do
         google_session = GoogleUserDoc.user_google_session(token)
         Rails.logger.info("[Auth#set_idhash] google session = #{google_session.inspect}")
@@ -134,6 +134,7 @@ class AuthController < ApplicationController
     user_info = nil
     user_trust_votes = nil
     user_votes = nil
+    user_verify_votes = nil
     
     google_action do
       collection = google_session.collection_by_title(Settings.google.user.collection)

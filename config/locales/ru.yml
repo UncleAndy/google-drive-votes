@@ -2,6 +2,14 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 ru:
+  master:
+    actions:
+      view_me: "Посмотреть свой паспорт"
+      view_other: "Посмотреть все паспорта"
+      verify_other: "Удостоверить паспорт"
+      trust_other: "Установить ответственность"
+      do_vote: "Участвовать в голосовании"
+
   hello: "Hello world"
   redo_required: "Была произведена авторизация. Если переход на нее произошел в процессе выполнения какого-то действия, вам необходимо повторить это действие."
 

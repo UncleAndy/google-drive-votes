@@ -32,6 +32,8 @@ GoogleDriveVotes::Application.routes.draw do
     end
   end
 
+  match '/master', :to => 'master#index'
+  
   match 'about', :to => 'home#about'
   match 'extended', :to => 'home#extended'
   root :to => "home#index"
