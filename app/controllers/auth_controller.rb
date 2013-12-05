@@ -50,6 +50,7 @@ class AuthController < ApplicationController
     user_info = nil
     user_verify_votes = nil
     user_votes = nil
+    collection = nil
     if token.present?
       Rails.logger.info("[Auth#se4t_idhash] token present")
       google_action do
@@ -60,7 +61,7 @@ class AuthController < ApplicationController
         user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[0] if collection
         Rails.logger.info("[Auth#set_idhash] user_doc = #{user_doc.inspect}")
       end
-      if user_doc
+      if collection && user_doc
         google_action do
           user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
           Rails.logger.info("[Auth#set_idhash] user_info = #{user_info.inspect}")
@@ -74,7 +75,7 @@ class AuthController < ApplicationController
 
           # В цикле пытаемся найти другие документы с таким именем доступные для записи в данной коллекции
           Rails.logger.info("[Auth#set_idhash] check cell A2 = #{user_info["A2"]} and test_val = #{test_val}")
-          while user_info["A2"] != test_val
+          while collection.present? && user_info["A2"] != test_val
             Rails.logger.info("[Auth#set_idhash] user_info not writed")
             user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx] if collection
             Rails.logger.info("[Auth#set_idhash] next user_doc = #{user_doc.inspect}")
