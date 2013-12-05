@@ -63,6 +63,9 @@ class AuthController < ApplicationController
       end
       if collection && user_doc
         google_action do
+          # Проверяем наличие всех страниц
+          check_pages(user_doc)
+          
           user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
           Rails.logger.info("[Auth#set_idhash] user_info = #{user_info.inspect}")
 
@@ -75,50 +78,55 @@ class AuthController < ApplicationController
 
           # В цикле пытаемся найти другие документы с таким именем доступные для записи в данной коллекции
           Rails.logger.info("[Auth#set_idhash] check cell A2 = #{user_info["A2"]} and test_val = #{test_val}")
-          while collection.present? && user_info["A2"] != test_val
+          while collection.present? && user_doc.present? && user_info["A2"] != test_val
             Rails.logger.info("[Auth#set_idhash] user_info not writed")
             user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx] if collection
-            Rails.logger.info("[Auth#set_idhash] next user_doc = #{user_doc.inspect}")
-            user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
-            Rails.logger.info("[Auth#set_idhash] next user_info = #{user_info.inspect}")
             idx += 1
-            
-            user_info["A2"] = test_val
-            user_info.save
-            user_info.reload
-          end
-          
-          if user_info["A2"] != test_val
-            session[:idhash] = ''
-            session[:doc_key] = ''
-            user_doc = nil
-            user_info = nil
-            flash[:alert] = I18n.t("errors.not_your_document")
-          else
-            user_info["A2"] = ''
-            user_info.save
-            
-            idhash = user_info["B1"] if user_info
-            doc_key = user_doc.key
-            Rails.logger.info("[Auth#set_idhash] idhash = #{idhash}, doc_key = #{doc_key}")
+            if user_doc.present?
+              Rails.logger.info("[Auth#set_idhash] next user_doc = #{user_doc.inspect}")
+              user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
+              Rails.logger.info("[Auth#set_idhash] next user_info = #{user_info.inspect}")
 
-            # Проверяем соответствие idhash и документа
-            # Пропускаем если idhash новый или если пара 
-            if TrustNetMember.find_by_idhash_and_doc_key(idhash, doc_key) || (!TrustNetMember.find_by_idhash(idhash) && !TrustNetMember.find_by_doc_key(doc_key))
-              Rails.logger.info("[Auth#set_idhash] check member OK: session[idhash] = #{idhash}, session[doc_key] = #{doc_key}")
-              session[:idhash] = idhash
-              session[:doc_key] = doc_key
-            else
-              Rails.logger.info("[Auth#set_idhash] check member BAD: session[idhash] = , session[doc_key] = #{doc_key}")
+              user_info["A2"] = test_val
+              user_info.save
+              user_info.reload
+            end
+          end
+
+          if user_doc.present?
+            if user_info["A2"] != test_val
               session[:idhash] = ''
-              session[:doc_key] = doc_key
+              session[:doc_key] = ''
               user_doc = nil
               user_info = nil
-              flash[:alert] = I18n.t("errors.not_your_idhash")
-            end
+              flash[:alert] = I18n.t("errors.not_your_document")
+            else
+              user_info["A2"] = ''
+              user_info.save
 
-            # Проверяем наличие всех страниц
-            check_pages(user_doc)
+              idhash = user_info["B1"] if user_info
+              doc_key = user_doc.key
+              Rails.logger.info("[Auth#set_idhash] idhash = #{idhash}, doc_key = #{doc_key}")
+
+              # Проверяем соответствие idhash и документа
+              # Пропускаем если idhash новый или если пара
+              if TrustNetMember.find_by_idhash_and_doc_key(idhash, doc_key) || (!TrustNetMember.find_by_idhash(idhash) && !TrustNetMember.find_by_doc_key(doc_key))
+                Rails.logger.info("[Auth#set_idhash] check member OK: session[idhash] = #{idhash}, session[doc_key] = #{doc_key}")
+                session[:idhash] = idhash
+                session[:doc_key] = doc_key
+              else
+                Rails.logger.info("[Auth#set_idhash] check member BAD: session[idhash] = , session[doc_key] = #{doc_key}")
+                session[:idhash] = ''
+                session[:doc_key] = doc_key
+                user_doc = nil
+                user_info = nil
+                flash[:alert] = I18n.t("errors.not_your_idhash")
+              end
+            end
+          else
+            Rails.logger.info("[Auth#set_idhash] user doc not found: create")
+            user_doc, user_info, user_verify_votes, user_votes, user_trust_votes = create_user_doc(google_session)
+            session[:doc_key] = user_doc.key if user_doc
           end
         end
       else
