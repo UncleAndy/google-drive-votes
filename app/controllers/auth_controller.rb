@@ -31,7 +31,8 @@ class AuthController < ApplicationController
       user_doc, user_info, user_verify_votes, user_votes, user_trust_votes = set_idhash(auth_token.token)
       sync_data(session[:idhash], user_doc, user_info, user_verify_votes, user_votes, user_trust_votes)
 
-      flash[:notice] = I18n.t('redo_required')
+      
+      flash[:notice] = I18n.t('redo_required') if session[:last_query_method].upcase != 'GET'
       redirect_to session[:site_return_url] || root_path
     rescue OAuth2::Error
       redirect_to auth_path
@@ -236,11 +237,6 @@ class AuthController < ApplicationController
           vote.destroy
         end
       end
-
-
-
-
-
       
       # Голоса доверия
       doc_trust_votes = {}
@@ -286,9 +282,6 @@ class AuthController < ApplicationController
         end
       end
 
-
-
-      
       # Проверяем регистрацию пользователя в сети доверия
       nick = user_info["C1"]
       member = TrustNetMember.find_by_idhash_and_doc_key(idhash, user_doc.key)

@@ -73,6 +73,7 @@ class ApplicationController < ActionController::Base
     end
     if !success
       session[:site_return_url] = request.env['REQUEST_URI']
+      session[:last_query_method] = request.method
       redirect_to auth_path
       false
     else
@@ -109,6 +110,7 @@ class ApplicationController < ActionController::Base
   def login_required
     if !session[:auth_token].present? || !session[:refresh_token].present?
       session[:site_return_url] = request.env['REQUEST_URI']
+      session[:last_query_method] = request.method
       redirect_to auth_path
     end
   end
