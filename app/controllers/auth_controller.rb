@@ -15,23 +15,27 @@ class AuthController < ApplicationController
   end
 
   def login
-    auth_token = @client.auth_code.get_token(params[:code], :redirect_uri => Settings.oauth2.redirect_url)
-    session[:auth_token] = auth_token.token
-    if auth_token.expires_in.present?
-      session[:auth_token_ttl] = DateTime.now.to_i + auth_token.expires_in.to_i
-    else
-      session[:auth_token_ttl] = ''
-    end
-    session[:refresh_token] = auth_token.refresh_token
-    Rails.logger.info("AUTH: Auth token #{session[:auth_token]}")
-    Rails.logger.info("AUTH: Refresh token #{session[:refresh_token]}")
-    
-    # Открываем документ пользователя и запоминаем в сессии его idhash
-    user_doc, user_info, user_verify_votes, user_votes, user_trust_votes = set_idhash(auth_token.token)
-    sync_data(session[:idhash], user_doc, user_info, user_verify_votes, user_votes, user_trust_votes)
+    begin
+      auth_token = @client.auth_code.get_token(params[:code], :redirect_uri => Settings.oauth2.redirect_url)
+      session[:auth_token] = auth_token.token
+      if auth_token.expires_in.present?
+        session[:auth_token_ttl] = DateTime.now.to_i + auth_token.expires_in.to_i
+      else
+        session[:auth_token_ttl] = ''
+      end
+      session[:refresh_token] = auth_token.refresh_token
+      Rails.logger.info("AUTH: Auth token #{session[:auth_token]}")
+      Rails.logger.info("AUTH: Refresh token #{session[:refresh_token]}")
 
-    flash[:notice] = I18n.t('redo_required')
-    redirect_to session[:site_return_url] || root_path
+      # Открываем документ пользователя и запоминаем в сессии его idhash
+      user_doc, user_info, user_verify_votes, user_votes, user_trust_votes = set_idhash(auth_token.token)
+      sync_data(session[:idhash], user_doc, user_info, user_verify_votes, user_votes, user_trust_votes)
+
+      flash[:notice] = I18n.t('redo_required')
+      redirect_to session[:site_return_url] || root_path
+    rescue OAuth2::Error
+      redirect_to auth_path
+    end
   end
 
   private
