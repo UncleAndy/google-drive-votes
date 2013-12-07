@@ -31,8 +31,8 @@ class AuthController < ApplicationController
       user_doc, user_info, user_verify_votes, user_votes, user_trust_votes = set_idhash(auth_token.token)
       sync_data(session[:idhash], user_doc, user_info, user_verify_votes, user_votes, user_trust_votes)
 
-      
-      flash[:notice] = I18n.t('redo_required') if session[:last_query_method].upcase != 'GET'
+      flash[:notice] = I18n.t('redo_required') if session[:last_query_method].present? && session[:last_query_method].upcase != 'GET'
+      session[:last_query_method] = ''
       redirect_to session[:site_return_url] || root_path
     rescue OAuth2::Error
       redirect_to auth_path
@@ -51,119 +51,54 @@ class AuthController < ApplicationController
   def set_idhash(token)
     Rails.logger.info("[Auth#set_idhash] run")
     google_session = nil
-    user_doc = nil
+    passport = nil
     user_info = nil
-    user_verify_votes = nil
-    user_votes = nil
-    collection = nil
     if token.present?
       Rails.logger.info("[Auth#se4t_idhash] token present")
+      doc_session = GoogleUserDoc.new(session)
       google_action do
-        google_session = GoogleUserDoc.user_google_session(token)
-        Rails.logger.info("[Auth#set_idhash] google session = #{google_session.inspect}")
-        collection = google_session.collection_by_title(Settings.google.user.collection)
-        Rails.logger.info("[Auth#set_idhash] collection = #{collection.inspect}")
-        user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[0] if collection
-        Rails.logger.info("[Auth#set_idhash] user_doc = #{user_doc.inspect}")
+        google_session = doc_session.user_google_session(token)
+        passport = doc_session.passport
       end
-      if collection && user_doc
+      if passport
         google_action do
-          # Проверяем наличие всех страниц
-          check_pages(user_doc)
-          
-          user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
+          user_info = passport.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
           Rails.logger.info("[Auth#set_idhash] user_info = #{user_info.inspect}")
 
-          # Проверяем что документ доступен для записи
-          test_val = rand().to_s
-          user_info["A2"] = test_val
-          user_info.save
-          user_info.reload
-          idx = 1
+          idhash = user_info["B1"] if user_info
+          doc_key = passport.key
+          Rails.logger.info("[Auth#set_idhash] idhash = #{idhash}, doc_key = #{doc_key}")
 
-          # В цикле пытаемся найти другие документы с таким именем доступные для записи в данной коллекции
-          Rails.logger.info("[Auth#set_idhash] check cell A2 = #{user_info["A2"]} and test_val = #{test_val}")
-          while collection.present? && user_doc.present? && user_info["A2"] != test_val
-            Rails.logger.info("[Auth#set_idhash] user_info not writed")
-            user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx] if collection
-            idx += 1
-            if user_doc.present?
-              Rails.logger.info("[Auth#set_idhash] next user_doc = #{user_doc.inspect}")
-              user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
-              Rails.logger.info("[Auth#set_idhash] next user_info = #{user_info.inspect}")
-
-              user_info["A2"] = test_val
-              user_info.save
-              user_info.reload
-            end
-          end
-
-          if user_doc.present?
-            if user_info["A2"] != test_val
-              session[:idhash] = ''
-              session[:doc_key] = ''
-              user_doc = nil
-              user_info = nil
-              flash[:alert] = I18n.t("errors.not_your_document")
+          # Проверяем соответствие idhash и документа
+          # Пропускаем если idhash новый или если пара
+          if idhash.present?
+            if (TrustNetMember.find_by_idhash_and_doc_key(idhash, doc_key) ||
+                (!TrustNetMember.find_by_idhash(idhash) && !TrustNetMember.find_by_doc_key(doc_key)))
+              Rails.logger.info("[Auth#set_idhash] check member OK: session[idhash] = #{idhash}, session[doc_key] = #{doc_key}")
+              session[:idhash] = idhash
+              session[:doc_key] = doc_key
             else
-              user_info["A2"] = ''
-              user_info.save
-
-              idhash = user_info["B1"] if user_info
-              doc_key = user_doc.key
-              Rails.logger.info("[Auth#set_idhash] idhash = #{idhash}, doc_key = #{doc_key}")
-
-              # Проверяем соответствие idhash и документа
-              # Пропускаем если idhash новый или если пара
-              if TrustNetMember.find_by_idhash_and_doc_key(idhash, doc_key) || (!TrustNetMember.find_by_idhash(idhash) && !TrustNetMember.find_by_doc_key(doc_key))
-                Rails.logger.info("[Auth#set_idhash] check member OK: session[idhash] = #{idhash}, session[doc_key] = #{doc_key}")
-                session[:idhash] = idhash
-                session[:doc_key] = doc_key
-              else
-                Rails.logger.info("[Auth#set_idhash] check member BAD: session[idhash] = , session[doc_key] = #{doc_key}")
-                session[:idhash] = ''
-                session[:doc_key] = doc_key
-                user_doc = nil
-                user_info = nil
-                flash[:alert] = I18n.t("errors.not_your_idhash")
-              end
+              Rails.logger.info("[Auth#set_idhash] check member BAD: session[idhash] = , session[doc_key] = #{doc_key}")
+              session[:idhash] = ''
+              session[:doc_key] = doc_key
+              user_info = nil
+              flash[:alert] = I18n.t("errors.not_your_idhash")
             end
           else
-            Rails.logger.info("[Auth#set_idhash] user doc not found: create")
-            user_doc, user_info, user_verify_votes, user_votes, user_trust_votes = create_user_doc(google_session)
-            session[:doc_key] = user_doc.key if user_doc
+            Rails.logger.info("[Auth#set_idhash] check member BAD (idhash empty): session[idhash] = , session[doc_key] = #{doc_key}")
+            session[:idhash] = ''
+            session[:doc_key] = doc_key
+            user_info = nil
           end
         end
       else
         Rails.logger.info("[Auth#set_idhash] user doc not found: create")
-        user_doc, user_info, user_verify_votes, user_votes, user_trust_votes = create_user_doc(google_session)
-        session[:doc_key] = user_doc.key if user_doc
+        session[:idhash] = ''
+        session[:doc_key] = ''
+        flash[:alert] = I18n.t("errors.can_not_create_passport")
       end
     end
-    [user_doc, user_info, user_verify_votes, user_votes, user_trust_votes]
-  end
-
-  def create_user_doc(google_session)
-    user_doc = nil
-    user_info = nil
-    user_trust_votes = nil
-    user_votes = nil
-    user_verify_votes = nil
-    
-    google_action do
-      collection = google_session.collection_by_title(Settings.google.user.collection)
-      collection = google_session.root_collection.create_subcollection(Settings.google.user.collection) if !collection
-
-      user_doc = google_session.create_spreadsheet(Settings.google.user.main_doc)
-      if user_doc
-        collection.add(user_doc) if collection
-
-        user_doc.acl.push({:scope_type => "default", :role => "reader"})
-
-        check_pages(user_doc)
-      end
-    end
-    [user_doc, user_info, user_verify_votes, user_votes, user_trust_votes]
+    [passport, user_info, nil, nil, nil]
   end
 
   # Синхронизация данных в БД с документом
@@ -292,38 +227,5 @@ class AuthController < ApplicationController
         member.update_attributes(:nick => nick)
       end
     end
-  end
-
-  def check_pages(user_doc)
-    # Страница info
-    user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info)
-    if !user_info
-      user_info = user_doc.worksheets()[0]
-      user_info.title = Settings.google.user.main_doc_pages.user_info
-      user_info.max_rows = 1000
-      user_info.max_cols = 3
-      user_info["A1"] = I18n.t("user_info.idhash")
-      user_info["A3"] = I18n.t("simple_form.labels.defaults.emails")
-      user_info["A4"] = I18n.t("simple_form.labels.defaults.skype")
-      user_info["A5"] = I18n.t("simple_form.labels.defaults.icq")
-      user_info["A6"] = I18n.t("simple_form.labels.defaults.jabber")
-      user_info["A7"] = I18n.t("simple_form.labels.defaults.phones")
-      user_info["A8"] = I18n.t("simple_form.labels.defaults.facebook")
-      user_info["A9"] = I18n.t("simple_form.labels.defaults.vk")
-      user_info["A10"] = I18n.t("simple_form.labels.defaults.odnoklassniki")
-      user_info.save
-    end
-
-    # Страница голосов верификации в сети доверия (idhash, main_doc_url_key, verify_level)
-    user_verify_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.verify_votes)
-    user_verify_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.verify_votes, 1000, 3) if !user_verify_votes
-
-    # Страница голосов в голосованиях (vote_doc_url_key, user_vote_doc_url_key)
-    user_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.votes)
-    user_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.votes, 30000, 3) if !user_votes
-
-    # Страница голосов доверия
-    user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_votes)
-    user_trust_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.trust_votes, 1000, 2) if !user_trust_votes
   end
 end

@@ -15,23 +15,28 @@
   .panel.panel-default
     .panel-heading
       %b
-        Уровень доверия
+        = I18n.t('user_trust_net.trust_level')
     .panel-body.center
       %p
-        Данным своим голосом вы должны указать насколько вы доверяете данному человеку при удостоверении им
-        других людей. Например, если вы уверены, что этот человек установил высокий уровень верификации
-        несуществующим в реальности людям, то, уровень доверия ему имеет смысл сделать минимальным.
+        Данным своим голосом вы должны указать насколько ответственным вы считаете данного человека при заверении им паспортов
+        других людей. Например, если вы уверены, что этот человек заверил паспорта
+        несуществующим в реальности людям, то уровень доверия ему имеет смысл сделать минимальным.
       %table.white.wide.padded
         %tr
           %td.left{:width => '20%'}
-            Не доверяю
           %td.center
             = f.input_field :vote_trust_level, required: true, label: false, id: 'trust-level', size: 4, style: 'text-align: center;', readonly: true
           %td.right{:width => '20%'}
-            Польностью доверяю
         %tr
           %td{:colspan => 3}
             %div{ id: 'slider-range-trust'}
+        %tr
+          %td.left{:width => '20%'}
+            Безответственный
+          %td.center
+            Пока не знаю
+          %td.right{:width => '20%'}
+            Польностью ответственный
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'
     = link_to "Назад", :back, :class => 'btn btn-default'

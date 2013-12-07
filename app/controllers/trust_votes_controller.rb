@@ -36,8 +36,8 @@ class TrustVotesController < ApplicationController
       trust_votes = nil
       row_num = 1
       return false if !google_action do
-        GoogleUserDoc.init(session)
-        trust_votes = GoogleUserDoc.doc_trust_votes_page
+        doc_session = GoogleUserDoc.new(session)
+        trust_votes = doc_session.doc_trust_votes_page
         # Находим в документе строку с таким идентификатором и документом или последнюю свободную
         while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != params[:vote][:vote_idhash]
           row_num += 1
@@ -86,8 +86,8 @@ class TrustVotesController < ApplicationController
       @vote.update_attributes(params[:vote]) if @vote
 
       return false if !google_action do
-        GoogleUserDoc.init(session)
-        trust_votes = GoogleUserDoc.doc_trust_votes_page
+        doc_session = GoogleUserDoc.new(session)
+        trust_votes = doc_session.doc_trust_votes_page
         # Находим строку с данным голосом и прописываем его изменение
         row_num = 1
         while trust_votes["A#{row_num}"].present? && trust_votes["A#{row_num}"] != @target_idhash
@@ -109,8 +109,8 @@ class TrustVotesController < ApplicationController
     @vote = UserTrustVote.find_by_idhash_and_doc_key_and_vote_idhash(@idhash, @doc_key, @target_idhash)
     if @vote
       return false if !google_action do
-        GoogleUserDoc.init(session)
-        trust_votes = GoogleUserDoc.doc_trust_votes_page
+        doc_session = GoogleUserDoc.new(session)
+        trust_votes = doc_session.doc_trust_votes_page
 
         # Ищем строку в документе
         row_num = 1

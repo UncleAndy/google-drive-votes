@@ -11,28 +11,33 @@
   .center
     = f.input :vote_idhash, required: false, disabled: true, :input_html => {:size=> '76', :class=>'center'}
     = link_to "проверка идентификатора пользователя", idhash_check_user_path, :target => "_blank"
-    = f.input :vote_doc_key, required: false, disabled: true, :input_html => {:class=>'center'}
+    = f.input :vote_doc_key, required: false, disabled: true, :input_html => {:size=> '60', :class=>'center'}
   %br
   .panel.panel-default
     .panel-heading
       %b
-        Уровень верификации
+        = I18n.t('user_trust_net.verify_level')
     .panel-body.center
       %p
         Своим голосом вы должны удостоверить степень вашей уверенности что реальный человек имеет указанный им
         идентификатор (в соответствии с его персональными данными, которые он должен вам предоставить) и что
-        именно он имеет доступ к своему документу с указанным им идентификатором.
+        именно он имеет доступ к своему паспорту с указанным им кодом.
       %table.white.wide.padded
+        %tr
+          %td.left{:width => '20%'}
+          %td.center
+            = f.input_field :vote_verify_level, required: true, label: false, id: 'verify-level', size: 4, style: 'text-align: center;', readonly: true
+          %td.right{:width => '20%'}
+        %tr
+          %td{:colspan => 3}
+            %div{ id: 'slider-range-verify' }
         %tr
           %td.left{:width => '20%'}
             Уверен в обратном
           %td.center
-            = f.input_field :vote_verify_level, required: true, label: false, id: 'verify-level', size: 4, style: 'text-align: center;', readonly: true
+            Пока не знаю
           %td.right{:width => '20%'}
             Польностью уверен
-        %tr
-          %td{:colspan => 3}
-            %div{ id: 'slider-range-verify' }
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'
     = link_to "Назад", :back, :class => 'btn btn-default'

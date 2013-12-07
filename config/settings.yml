@@ -11,6 +11,7 @@ google:
       verify_votes: "Верификация"
       trust_votes: "Доверие"
       votes: "Голосования"
+      property_votes: "Свойства"
   main:
     trust_net: "GPLVote сеть доверия"
     pages:

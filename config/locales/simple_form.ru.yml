@@ -14,11 +14,11 @@ ru:
     labels:
       defaults:
         idhash: "Идентификатор пользователя"
-        doc_key: "Идентификатор документа"
+        doc_key: "Код паспорта"
         vote_idhash: "Идентификатор пользователя"
-        vote_doc_key: "Идентификатор документа"
-        vote_verify_level: "Уровень верификации"
-        vote_trust_level: "Уровень доверия"
+        vote_doc_key: "Код паспорта"
+        vote_verify_level: "Уровень заверения"
+        vote_trust_level: "Уровень ответственности"
         emails: "Адреса электронной почты"
         skype: "Skype"
         icq: "ICQ"

@@ -9,7 +9,8 @@
 
 .panel.panel-default
   .panel-heading
-    Проверяемый человек
+    %b
+      Проверяемый человек
   .panel-body
     %p
       Вы можете ввести либо идентификатор вручную, либо софрмировать его, указав персональные данные 
@@ -17,7 +18,7 @@
     %p
       Введите фамилию, имя, отчество и дату рождения проверяемого человека.
       Эти данные не будут отправлятся на сервер или где-либо сохраняться.
-      Они будут использованы лишь для определения идентификатора проверяемого.
+      Они будут использованы лишь для вычисления идентификатора проверяемого.
     %p.center
       %b
         * Фамилия:
@@ -36,29 +37,34 @@
   
 = simple_form_for :vote, :url => user_verify_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_trust_vote_form' } do |f|
   .center
-    = f.input :vote_idhash, :input_html => { id: 'new_vote_idhash_field' }, required: true
-    = f.input :vote_doc_key, required: true
+    = f.input :vote_idhash, :input_html => { id: 'new_vote_idhash_field', :size=> '76' }, required: true
+    = f.input :vote_doc_key, :input_html => { :size=> '60' }, required: true
   %br
   .panel.panel-default
     .panel-heading
       %b
-        Уровень верификации
+        = I18n.t('user_trust_net.verify_level')
     .panel-body.center
       %p
         Своим голосом вы должны удостоверить степень вашей уверенности в том, что именно данный реальный человек,
-        с указанными выше персональными данными (которые он должен вам предоставить), имеет доступ к документу
-        с указанным выше идентификатором.
+        с указанными выше персональными данными (которые он должен вам предоставить), имеет доступ к паспорту
+        с указанным выше кодом.
       %table.white.wide.padded
+        %tr
+          %td.left{:width => '20%'}
+          %td.center
+            = f.input_field :vote_verify_level, required: true, label: false, id: 'verify-level', size: 4, style: 'text-align: center;', readonly: true
+          %td.right{:width => '20%'}
+        %tr
+          %td{:colspan => 3}
+            %div{ id: 'slider-range-verify' }
         %tr
           %td.left{:width => '20%'}
             Уверен в обратном
           %td.center
-            = f.input_field :vote_verify_level, required: true, label: false, id: 'verify-level', size: 4, style: 'text-align: center;', readonly: true
+            Пока не знаю
           %td.right{:width => '20%'}
             Польностью уверен
-        %tr
-          %td{:colspan => 3}
-            %div{ id: 'slider-range-verify' }
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'
     = link_to "Назад", :back, :class => 'btn btn-default'

@@ -23,15 +23,15 @@ class UserController < ApplicationController
       nick = params[:user][:nick]
 
       return false if !google_action do
-        GoogleUserDoc.init(session)
-        user_info = GoogleUserDoc.doc_info_page
+        doc_session = GoogleUserDoc.new(session)
+        user_info = doc_session.doc_info_page
         user_info["B1"] = idhash
         user_info["C1"] = nick
         user_info.save
 
         # Регистрация в сети доверия (только в БД)
         if user_info["B1"] == idhash
-          rec = TrustNetMember.register(idhash, GoogleUserDoc.user_doc.key, nick)
+          rec = TrustNetMember.register(idhash, doc_session.user_doc.key, nick)
           if rec.errors.present?
             flash[:alert] = rec.errors.full_messages.join(', ')
             redirect_to :back and return
@@ -47,8 +47,8 @@ class UserController < ApplicationController
     user.update_attributes(params[:user])
     
     return false if !google_action do
-      GoogleUserDoc.init(session)
-      user_info = GoogleUserDoc.doc_info_page
+      doc_session = GoogleUserDoc.new(session)
+      user_info = doc_session.doc_info_page
       user_info["B3"] = params[:user][:emails]
       user_info["B4"] = params[:user][:skype]
       user_info["B5"] = params[:user][:icq]
@@ -63,7 +63,7 @@ class UserController < ApplicationController
   end
   
   def idhash_check
-    # Страница проверки идентификатора пользователя (JS)
+    # Страница проверки идентификатора пользователя (JavaScript)
   end
 
   def doc_info

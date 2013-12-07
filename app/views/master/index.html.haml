@@ -11,5 +11,14 @@
         = link_to '#' do
           %button.btn.btn-info.btn-wide= I18n.t("master.actions.trust_other")
 %p
+  %table.invis.wide
+    %tr
+      %td{:width => '50%'}
+        = link_to '#' do
+          %button.btn.btn-info.btn-wide= I18n.t("master.actions.set_property")
+      %td
+        = link_to '#' do
+          %button.btn.btn-info.btn-wide= I18n.t("master.actions.set_link")
+%p
   = link_to '#' do
     %button.btn.btn-default.btn-wide= I18n.t("master.actions.do_vote")

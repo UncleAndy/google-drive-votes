@@ -63,11 +63,9 @@ class ApplicationController < ActionController::Base
         break
       rescue GoogleDrive::AuthenticationError => e
         Rails.logger.info("GoogleDrive::AuthenticationError: try refresh token")
-        GoogleUserDoc.creal_all_singletons
         refresh_token
       rescue OAuth2::Error => e
         Rails.logger.info("OAuth2::Error: try refresh token")
-        GoogleUserDoc.creal_all_singletons
         refresh_token
       end
     end
@@ -118,8 +116,8 @@ class ApplicationController < ActionController::Base
   def check_preauth
     return google_action do
       Rails.logger.info("[check_preauth] Run for #{session.inspect}")
-      GoogleUserDoc.init(session)
-      user_info = GoogleUserDoc.doc_info_page
+      doc_session = GoogleUserDoc.new(session)
+      user_info = doc_session.doc_info_page
     end
   end
   

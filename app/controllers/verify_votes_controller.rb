@@ -43,8 +43,8 @@ class VerifyVotesController < ApplicationController
         verify_votes = nil
         row_num = 1
         return false if !google_action do
-          GoogleUserDoc.init(session)
-          verify_votes = GoogleUserDoc.doc_verify_votes_page
+          doc_session = GoogleUserDoc.new(session)
+          verify_votes = doc_session.doc_verify_votes_page
           # Находим в документе строку с таким идентификатором и документом или последнюю свободную
           while verify_votes["A#{row_num}"].present? &&
                 (verify_votes["A#{row_num}"] != params[:vote][:vote_idhash] || verify_votes["B#{row_num}"] != params[:vote][:vote_doc_key])
@@ -99,8 +99,8 @@ class VerifyVotesController < ApplicationController
       @vote.update_attributes(params[:vote]) if @vote
 
       return false if !google_action do
-        GoogleUserDoc.init(session)
-        verify_votes = GoogleUserDoc.doc_verify_votes_page
+        doc_session = GoogleUserDoc.new(session)
+        verify_votes = doc_session.doc_verify_votes_page
         # Находим строку с данным голосом и прописываем его изменение
         row_num = 1
         while verify_votes["A#{row_num}"].present? && (verify_votes["A#{row_num}"] != @target_idhash || verify_votes["B#{row_num}"] != @target_doc_key)
@@ -122,8 +122,8 @@ class VerifyVotesController < ApplicationController
     @vote = UserVerifyVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(@idhash, @target_idhash, @target_doc_key)
     if @vote
       return false if !google_action do
-        GoogleUserDoc.init(session)
-        verify_votes = GoogleUserDoc.doc_verify_votes_page
+        doc_session = GoogleUserDoc.new(session)
+        verify_votes = doc_session.doc_verify_votes_page
 
         # Ищем строку в документе
         row_num = 1
