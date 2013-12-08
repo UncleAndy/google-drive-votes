@@ -28,8 +28,8 @@ class AuthController < ApplicationController
       Rails.logger.info("AUTH: Refresh token #{session[:refresh_token]}")
 
       # Открываем документ пользователя и запоминаем в сессии его idhash
-      user_doc, user_info, user_verify_votes, user_votes, user_trust_votes = set_idhash(auth_token.token)
-      sync_data(session[:idhash], user_doc, user_info, user_verify_votes, user_votes, user_trust_votes)
+      user_doc, doc_session = set_idhash(auth_token.token)
+      sync_data(session[:idhash], user_doc, doc_session)
 
       flash[:notice] = I18n.t('redo_required') if session[:last_query_method].present? && session[:last_query_method].upcase != 'GET'
       session[:last_query_method] = ''
@@ -53,6 +53,7 @@ class AuthController < ApplicationController
     google_session = nil
     passport = nil
     user_info = nil
+    doc_session = nil
     if token.present?
       Rails.logger.info("[Auth#se4t_idhash] token present")
       doc_session = GoogleUserDoc.new(session)
@@ -98,16 +99,19 @@ class AuthController < ApplicationController
         flash[:alert] = I18n.t("errors.can_not_create_passport")
       end
     end
-    [passport, user_info, nil, nil, nil]
+    [passport, doc_session]
   end
 
-  # Синхронизация данных в БД с документом
-  def sync_data(idhash, user_doc, user_info, user_verify_votes, user_votes, user_trust_votes)
+  # Синхронизация данных в БД с паспортом
+  def sync_data(idhash, user_doc, doc_session)
     return if user_doc.blank? || idhash.blank?
     google_action do
-      user_info = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.user_info) if !user_info
-      user_verify_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.verify_votes) if !user_verify_votes
-      user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_votes) if !user_trust_votes
+      doc_session = GoogleUserDoc.new(session) if !doc_session
+      user_doc = doc_session.passport if !user_doc
+      user_info = doc_session.doc_info_page
+      user_verify_votes = doc_session.doc_verify_votes_page
+      user_trust_votes = doc_session.doc_trust_votes_page
+      user_property_votes = doc_session.doc_property_votes_page
 
       # Настройки пользователя
       user = UserOption.find_or_create_by_idhash_and_doc_key(idhash, user_doc.key)
@@ -123,8 +127,7 @@ class AuthController < ApplicationController
                               })
 
 
-
-      
+      #################################################################
       # Голоса верификации
       # добавляем БД присутствующие в документе, но отсутствующие в БД
       # обновляем существующие голоса в соответствии со значением в документе
@@ -172,7 +175,8 @@ class AuthController < ApplicationController
           vote.destroy
         end
       end
-      
+
+      #################################################################
       # Голоса доверия
       doc_trust_votes = {}
       dup_rows = []
@@ -217,6 +221,54 @@ class AuthController < ApplicationController
         end
       end
 
+      #################################################################
+      # Голоса свойств
+      doc_property_votes = {}
+      dup_rows = []
+      user_property_votes.rows.each_with_index do |row, idx|
+        id = "#{row[0]}:#{row[1]}"
+
+        # Проверяем не продублирован-ли голос
+        if doc_property_votes[id]
+          # Есть дубль - второй голос помечаем на удаление (запоминаем номер строки) и игнориуем
+          row_num = idx + 1
+          dup_rows.push row_num
+          next
+        end
+
+        doc_property_votes[id] = true
+
+        break if row[0].blank? || row[2].blank?
+        vote = UserPropertyVote.find_by_idhash_and_doc_key_and_vote_idhash_and_vote_property_key(idhash, user_doc.key, row[0], row[1])
+        if vote
+          vote.update_attributes({:vote_property_level => row[2]}) if vote.vote_property_level != row[2].to_i
+        else
+          UserPropertyVote.create({:idhash => idhash, :doc_key => user_doc.key, :vote_idhash => row[0], :vote_property_key => row[1], :vote_property_level => row[2]})
+        end
+      end
+
+      # Цикл по номерам дублированных строк и их удаление в документе сдвигом вверх
+      dup_rows.each_with_index do |dup_row, idx|
+        row_num = dup_row - idx
+        while user_property_votes["A#{row_num}"].present?
+          user_property_votes["A#{row_num}"] = user_property_votes["A#{row_num+1}"]
+          user_property_votes["B#{row_num}"] = user_property_votes["B#{row_num+1}"]
+          user_property_votes["C#{row_num}"] = user_property_votes["C#{row_num+1}"]
+          user_property_votes["D#{row_num}"] = user_property_votes["D#{row_num+1}"]
+          row_num += 1
+        end
+      end
+      user_property_votes.save
+
+      # удаляем из БД отсутствующие в документе, но присутствующие в БД
+      UserPropertyVote.by_owner(idhash, user_doc.key).each do |vote|
+        id = "#{vote.vote_idhash}:#{vote.vote_property_key}"
+        if !doc_property_votes[id]
+          vote.destroy
+        end
+      end
+
+      
       # Проверяем регистрацию пользователя в сети доверия
       nick = user_info["C1"]
       member = TrustNetMember.find_by_idhash_and_doc_key(idhash, user_doc.key)

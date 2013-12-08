@@ -13,12 +13,21 @@ GoogleDriveVotes::Application.routes.draw do
         get :verify_from
       end
     end
+
     resources :trust_votes do
       collection do
         get :trust_to
         get :trust_from
       end
     end
+
+    resources :property_votes do
+      collection do
+        get :property_to
+        get :property_from
+      end
+    end
+      
     member do
       get :idhash_check
       get :doc_info

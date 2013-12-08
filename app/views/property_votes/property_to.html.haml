@@ -1,0 +1,55 @@
+%h2.center
+  - if params[:idhash].present?
+    = I18n.t("titles.to_other_user_property_votes")
+  - else
+    = I18n.t("titles.to_user_property_votes")
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
+  %li
+    - if params[:idhash].present?
+      = link_to I18n.t("titles.user_info"), doc_info_user_path(:doc_key => @doc_key, :idhash => @idhash)
+    - else
+      = link_to I18n.t("titles.user_cabinet"), user_path
+- if params[:idhash].present?
+  %p.input-group
+    %span.input-group-addon
+      = I18n.t("user_info_page.idhash")
+    - input_style = "text-align: center;"
+    - if !@doc_key
+      - input_style = "#{input_style}background-color: red;"
+    %input.form-control{ :value => @idhash, :readonly => true, :style => input_style }
+    %span.input-group-addon
+      = I18n.t("user_info_page.idhash")
+- if params[:doc_key].present?
+  %p.input-group
+    %span.input-group-addon
+      = I18n.t("user_info_page.doc_key")
+    - input_style = "text-align: center;"
+    %input.form-control{ :value => @doc_key, :readonly => true, :style => input_style }
+    %span.input-group-addon
+      = I18n.t("user_info_page.doc_key")
+%table.table.table-bordered.table-hover.table-condensed
+  %tr
+    %th.center
+      = I18n.t('user_trust_net.owner_id')
+    %th.center
+      = I18n.t('user_trust_net.owner_doc_key')
+    %th.center
+      = I18n.t('user_trust_net.property_key')
+    %th.center.col-sm-1
+      = I18n.t('user_trust_net.property_level')
+  - @user_property_votes.each do |vote|
+    %tr
+      %td.center
+        = link_to doc_info_user_path(:doc_key => vote.doc_key, :idhash => vote.idhash) do
+          = show_idhash(vote.idhash)
+      %td.center
+        = link_to "http://spreadsheets.google.com/ccc?key=#{vote.doc_key}", :target => '_blank' do
+          = spaced_str(vote.doc_key)
+      %td.center
+        = vote.vote_property_key
+      %td.center
+        = vote.vote_property_level
+.center
+  = link_to "Назад", :back, :class => 'btn btn-default'

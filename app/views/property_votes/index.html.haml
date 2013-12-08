@@ -1,0 +1,38 @@
+%h2.center= I18n.t("titles.user_property_votes")
+%ol.breadcrumb.center
+  %li
+    = link_to I18n.t("titles.home"), root_path
+  %li
+    = link_to I18n.t("titles.user_cabinet"), user_path
+%p
+  = link_to new_user_property_vote_path do
+    %button.btn.btn-primary
+      = I18n.t('new')
+%table.table.table-bordered.table-hover.table-condensed
+  %tr
+    %th.center
+      = I18n.t('user_trust_net.id')
+    %th.center
+      = I18n.t('user_trust_net.property_key')
+    %th.center.col-sm-1
+      = I18n.t('user_trust_net.property_level')
+    %th.center.col-sm-2
+      = I18n.t('actions')
+  - @user_property_votes.each do |vote|
+    %tr
+      %td.center
+        = link_to doc_info_user_path(:idhash => vote.vote_idhash) do
+          = show_idhash(vote.vote_idhash)
+      %td.center
+        = vote.vote_property_key
+      %td.center
+        = vote.vote_property_level
+      %td.center
+        = link_to edit_user_property_vote_path(vote.id) do
+          %button.btn.btn-primary
+            = I18n.t('edit')
+        = link_to user_property_vote_path(vote.id), :method => :delete, :data => { :confirm => I18n.t('are_you_sure') } do
+          %button.btn.btn-warning
+            = I18n.t('delete')
+.center
+  = link_to "Назад", :back, :class => 'btn btn-default'

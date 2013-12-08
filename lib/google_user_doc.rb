@@ -60,6 +60,12 @@ class GoogleUserDoc
     @user_doc_trust_votes = doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_votes) if doc
   end
 
+  def doc_property_votes_page
+    return @user_doc_property_votes if @user_doc_property_votes.present?
+    doc = user_doc
+    @user_doc_property_votes = doc.worksheet_by_title(Settings.google.user.main_doc_pages.property_votes) if doc
+  end
+
   def doc_votes_page
     return @user_doc_votes if @user_doc_votes.present?
     doc = user_doc

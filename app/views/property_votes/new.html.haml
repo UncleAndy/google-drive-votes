@@ -1,11 +1,11 @@
-%h2.center= I18n.t("titles.user_trust_vote_new")
+%h2.center= I18n.t("titles.user_property_vote_new")
 %ol.breadcrumb.center
   %li
     = link_to I18n.t("titles.home"), root_path
   %li
     = link_to I18n.t("titles.user_cabinet"), user_path
   %li
-    = link_to I18n.t("titles.user_trust_votes"), user_trust_votes_path
+    = link_to I18n.t("titles.user_property_votes"), user_property_votes_path
 
 .panel.panel-default
   .panel-heading
@@ -35,35 +35,35 @@
       %br
       %input{ :type => 'text', :id => 'birth_date'}
   
-= simple_form_for :vote, :url => user_trust_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_trust_vote_form' } do |f|
+= simple_form_for :vote, :url => user_property_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_property_vote_form' } do |f|
   .center
     = f.input :vote_idhash, :input_html => { id: 'new_vote_idhash_field', :size=> '76', :value => params[:idhash] }, required: true
+    = f.input :vote_property_key, :input_html => { :size=> '60', :value => params[:property_key] }, required: true
   %br
   .panel.panel-default
     .panel-heading
       %b
-        = I18n.t('user_trust_net.trust_level')
+        = I18n.t('user_trust_net.property_level')
     .panel-body.center
       %p
-        Данным своим голосом вы должны указать насколько ответственным вы считаете данного человека при заверении им паспортов
-        других людей. Например, если вы уверены, что этот человек заверил паспорта
-        несуществующим в реальности людям, то уровень доверия ему имеет смысл сделать минимальным.
+        Своим голосом вы должны удостоверить степень вашей уверенности в том, что данный человек,
+        с указанными выше персональными данными или идентификатором пользователя, соответствует смыслу указанного свойства.
       %table.white.wide.padded
         %tr
           %td.left{:width => '20%'}
           %td.center
-            = f.input_field :vote_trust_level, required: true, label: false, id: 'trust-level', size: 4, style: 'text-align: center;', readonly: true
+            = f.input_field :vote_property_level, required: true, label: false, id: 'property-level', size: 4, style: 'text-align: center;', readonly: true
           %td.right{:width => '20%'}
         %tr
           %td{:colspan => 3}
-            %div{ id: 'slider-range-trust'}
+            %div{ id: 'slider-range-property' }
         %tr
           %td.left{:width => '20%'}
-            Безответственный
+            Не соответствует
           %td.center
             Пока не знаю
           %td.right{:width => '20%'}
-            Польностью ответственный
+            Польностью соответствует
   .center
     = f.button :submit, "Готово", :class => 'btn btn-primary'
     = link_to "Назад", :back, :class => 'btn btn-default'

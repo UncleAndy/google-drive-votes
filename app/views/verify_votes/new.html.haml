@@ -37,8 +37,8 @@
   
 = simple_form_for :vote, :url => user_verify_votes_path, :method => :post, :html => {:autocomplete => "off", :id => 'new_trust_vote_form' } do |f|
   .center
-    = f.input :vote_idhash, :input_html => { id: 'new_vote_idhash_field', :size=> '76' }, required: true
-    = f.input :vote_doc_key, :input_html => { :size=> '60' }, required: true
+    = f.input :vote_idhash, :input_html => { id: 'new_vote_idhash_field', :size=> '76', :value => params[:idhash] }, required: true
+    = f.input :vote_doc_key, :input_html => { :size=> '60', :value => params[:doc_key] }, required: true
   %br
   .panel.panel-default
     .panel-heading

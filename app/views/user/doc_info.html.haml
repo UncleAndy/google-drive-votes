@@ -53,16 +53,41 @@
         %td.right{:width=>'50%'}= I18n.t("simple_form.labels.defaults.odnoklassniki")
         %td.left= f.input_field :odnoklassniki, required: false, :disabled => true
 %br
-%p{ :align => 'center' }
-  = link_to verify_from_user_verify_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
-    %button.btn.btn-info.btn-lg= I18n.t("titles.other_user_verify_votes")
-  = link_to trust_from_user_trust_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
-    %button.btn.btn-info.btn-lg= I18n.t("titles.other_user_trust_votes")
-%p{ :align => 'center' }
-  = link_to verify_to_user_verify_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
-    %button.btn.btn-info.btn-lg= I18n.t("titles.to_other_user_verify_votes")
-  = link_to trust_to_user_trust_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
-    %button.btn.btn-info.btn-lg= I18n.t("titles.to_other_user_trust_votes")
+%table.invis{:align => 'center'}
+  %tr
+    %td{:width => '50%'}
+      = link_to verify_from_user_verify_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
+        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.other_user_verify_votes")
+    %td
+      = link_to trust_from_user_trust_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
+        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.other_user_trust_votes")
+    %td
+      = link_to property_from_user_property_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
+        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.other_user_property_votes")
+  %tr
+    %td
+      = link_to verify_to_user_verify_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
+        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.to_other_user_verify_votes")
+    %td
+      = link_to trust_to_user_trust_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
+        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.to_other_user_trust_votes")
+    %td
+      = link_to property_to_user_property_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
+        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.to_other_user_property_votes")
+  %tr
+    %td
+      - if @idhash.present? && @doc_key.present?
+        = link_to new_user_verify_vote_path(:idhash => @idhash, :doc_key => @doc_key) do
+          %button.btn.btn-success.btn-lg.wide= I18n.t("master.actions.verify_other")
+    %td
+      - if @idhash.present?
+        = link_to new_user_trust_vote_path(:idhash => @idhash) do
+          %button.btn.btn-success.btn-lg.wide= I18n.t("master.actions.trust_other")
+    %td
+      - if @idhash.present?
+        = link_to new_user_property_vote_path(:idhash => @idhash) do
+          %button.btn.btn-success.btn-lg.wide= I18n.t("master.actions.property_other")
+
 %br
 .center
   = link_to "Назад", :back, :class => 'btn btn-default'

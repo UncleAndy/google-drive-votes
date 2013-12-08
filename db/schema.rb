@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131203125307) do
+ActiveRecord::Schema.define(:version => 20131208113232) do
 
   create_table "trust_net_members", :force => true do |t|
     t.string   "idhash",     :limit => 64,  :null => false
@@ -61,6 +61,20 @@ ActiveRecord::Schema.define(:version => 20131203125307) do
   end
 
   add_index "user_options", ["idhash", "doc_key"], :name => "index_user_options_on_idhash_and_doc_key", :unique => true
+
+  create_table "user_property_votes", :force => true do |t|
+    t.string   "idhash",              :limit => 64, :null => false
+    t.string   "doc_key",             :limit => 64, :null => false
+    t.string   "vote_idhash",         :limit => 64, :null => false
+    t.string   "vote_property_key"
+    t.integer  "vote_property_level",               :null => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+  end
+
+  add_index "user_property_votes", ["idhash", "doc_key"], :name => "index_user_property_votes_on_idhash_and_doc_key"
+  add_index "user_property_votes", ["vote_idhash", "vote_property_key", "vote_property_level"], :name => "user_pkey_property_hash_level"
+  add_index "user_property_votes", ["vote_property_key", "vote_idhash", "vote_property_level"], :name => "user_property_pkey_hash_level"
 
   create_table "user_trust_votes", :force => true do |t|
     t.string   "idhash",           :limit => 64, :null => false

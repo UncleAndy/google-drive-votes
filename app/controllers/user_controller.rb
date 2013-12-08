@@ -75,6 +75,7 @@ class UserController < ApplicationController
     end
     if @user_member
       @idhash = @user_member.idhash
+      @doc_key = @user_member.doc_key
       @nick = @user_member.nick
       @user = UserOption.find_or_create_by_idhash_and_doc_key(@idhash, @doc_key) if @idhash && @doc_key
     else

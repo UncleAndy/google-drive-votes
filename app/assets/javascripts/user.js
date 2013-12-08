@@ -52,4 +52,15 @@ $( document ).ready(function() {
       }
   });
   $( "#trust-level" ).val( $( "#slider-range-trust" ).slider( "value" ) );
+
+  $( "#slider-range-property" ).slider({
+      range: "min",
+      min: -10,
+      max: 10,
+      value: gon.property_level,
+      slide: function( event, ui ) {
+        $( "#property-level" ).val( ui.value );
+      }
+  });
+  $( "#property-level" ).val( $( "#slider-range-property" ).slider( "value" ) );
 });
