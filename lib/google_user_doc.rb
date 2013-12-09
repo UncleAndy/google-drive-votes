@@ -9,38 +9,6 @@ class GoogleUserDoc
     return @user_google_session if @user_google_session.present?
     @user_google_session = GoogleDrive.login_with_oauth(token) if token.present?
   end
-  
-  def user_doc
-    return @user_doc if @user_doc.present?
-    google_session = user_google_session(@session[:auth_token])
-    collection = google_session.collection_by_title(Settings.google.user.collection) if google_session
-
-    if collection.present?
-      idx = 0
-      # Проверяем все документы в коллекции пока не найдем тот, который может исправлять текущий пользователь
-      # или пока не переберем все документы
-      begin
-        @user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx]
-
-        test_page = @user_doc.worksheets()[0]
-
-        # Ищем первую пустую ячейку в столбце A
-        row_num = 1
-        while test_page["A#{row_num}"].present?
-          row_num += 1
-        end
-
-        # Вносим в нее случайное тестовое значение
-        test_val = rand().to_s
-        test_page["A#{row_num}"] = test_val
-        test_page.save
-        test_page.reload
-
-        idx += 1
-      end while @user_doc && test_page["A#{row_num}"] != test_val
-    end
-    @user_doc
-  end
 
   def doc_info_page
     return @user_doc_info if @user_doc_info.present?
@@ -137,5 +105,39 @@ class GoogleUserDoc
     # Страница заверяемых свойств (idhash, id_property, level)
     user_property_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.property_votes)
     user_property_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.property_votes, 1000, 3) if !user_property_votes
+  end
+
+  def user_doc
+    return @user_doc if @user_doc.present?
+    google_session = user_google_session(@session[:auth_token])
+    collection = google_session.collection_by_title(Settings.google.user.collection) if google_session
+
+    if collection.present?
+      idx = 0
+      # Проверяем все документы в коллекции пока не найдем тот, который может исправлять текущий пользователь
+      # или пока не переберем все документы
+      begin
+        @user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx]
+        break if !@user_doc
+
+        test_page = @user_doc.worksheets()[0]
+
+        # Ищем первую пустую ячейку в столбце A
+        row_num = 1
+        while test_page["A#{row_num}"].present?
+          row_num += 1
+        end
+
+        # Вносим в нее случайное тестовое значение
+        test_val = rand().to_s
+        test_page["A#{row_num}"] = test_val
+        test_page.save
+        test_page.reload
+
+        idx += 1
+      end while @user_doc && test_page["A#{row_num}"] != test_val
+    end
+
+    @user_doc
   end
 end

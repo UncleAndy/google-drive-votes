@@ -31,7 +31,7 @@ class UserController < ApplicationController
 
         # Регистрация в сети доверия (только в БД)
         if user_info["B1"] == idhash
-          rec = TrustNetMember.register(idhash, doc_session.user_doc.key, nick)
+          rec = TrustNetMember.register(idhash, doc_session.passport.key, nick)
           if rec.errors.present?
             flash[:alert] = rec.errors.full_messages.join(', ')
             redirect_to :back and return
