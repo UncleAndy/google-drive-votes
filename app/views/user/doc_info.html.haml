@@ -57,13 +57,13 @@
   %tr
     %td{:width => '50%'}
       = link_to verify_from_user_verify_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
-        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.other_user_verify_votes")
+        %button.btn.btn-warning.btn-lg.wide= I18n.t("titles.other_user_verify_votes")
     %td
       = link_to trust_from_user_trust_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
-        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.other_user_trust_votes")
+        %button.btn.btn-warning.btn-lg.wide= I18n.t("titles.other_user_trust_votes")
     %td
       = link_to property_from_user_property_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
-        %button.btn.btn-info.btn-lg.wide= I18n.t("titles.other_user_property_votes")
+        %button.btn.btn-warning.btn-lg.wide= I18n.t("titles.other_user_property_votes")
   %tr
     %td
       = link_to verify_to_user_verify_votes_path(:idhash => @idhash, :doc_key => @doc_key) do
