@@ -13,6 +13,12 @@ class UserController < ApplicationController
     @user = UserOption.find_or_create_by_idhash_and_doc_key(@idhash, @doc_key)
   end
 
+  def auth
+    session[:site_return_url] = request.referer || user_path
+    session[:last_query_method] = 'GET'
+    redirect_to auth_path
+  end
+  
   def new
   end
 

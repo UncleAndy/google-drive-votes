@@ -32,6 +32,7 @@ GoogleDriveVotes::Application.routes.draw do
       get :idhash_check
       get :doc_info
       get :idhash_info
+      get :auth
     end
   end
 
