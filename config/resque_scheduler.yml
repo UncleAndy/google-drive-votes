@@ -4,3 +4,10 @@ trust_net_calc_result:
   queue: trust_net_culc_result
   args:
   description: Считаем результаты сети доверия
+
+process_sync_data:
+  cron: '0 */30 * * * *'
+  class: 'Jobs::ProcessSyncData'
+  queue: process_sync_data
+  args:
+  description: Периодическая отправка на другие сервера синхронизирующих данных
