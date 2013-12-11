@@ -12,6 +12,11 @@ google:
       trust_votes: "Доверие"
       votes: "Голосования"
       property_votes: "Свойства"
+    vote_pages:
+      mode_page: "Режим голосования"
+      question_page: "Вопрос голосования"
+      answer_page: "Варианты ответа"
+      access_page: "Допуск к голосованию"
   main:
     trust_net: "GPLVote сеть доверия"
     pages:
