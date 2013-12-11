@@ -32,3 +32,4 @@ redis_for_resque:
   port: 6379
   db: 1
 
+host_id: "bb2e763e626f11e3ba7708606e187adb"

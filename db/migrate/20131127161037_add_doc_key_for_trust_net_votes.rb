@@ -1,6 +1,8 @@
 class AddDocKeyForTrustNetVotes < ActiveRecord::Migration
   def up
-    UserTrustNetVote.delete_all
+    execute <<-SQL
+      delete from user_trust_net_votes;
+    SQL
     add_column :user_trust_net_votes, :doc_key, :string, :limit => 64, :null => false
   end
 

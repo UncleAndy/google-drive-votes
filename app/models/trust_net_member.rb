@@ -19,6 +19,7 @@ class TrustNetMember < ActiveRecord::Base
       model
     else
       create({:idhash => idhash, :doc_key => doc_key, :nick => nick})
+      SyncQueue.create(:status => 'out', :cmd => 'NEW_MEMBER', :data => { :idhash => idhash, :doc_key => doc_key, :nick => nick })
     end
   end
 end

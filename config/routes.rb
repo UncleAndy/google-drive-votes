@@ -42,6 +42,8 @@ GoogleDriveVotes::Application.routes.draw do
     end
   end
 
+  resource :synchronize, :only => [:create]
+
   match '/master', :to => 'master#index'
   
   match 'about', :to => 'home#about'

@@ -11,7 +11,30 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131208113232) do
+ActiveRecord::Schema.define(:version => 20131211135545) do
+
+  create_table "sync_hosts", :force => true do |t|
+    t.string   "url"
+    t.string   "secret",                                     :null => false
+    t.string   "host_id",    :limit => 32,                   :null => false
+    t.boolean  "active",                   :default => true, :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
+  end
+
+  add_index "sync_hosts", ["host_id"], :name => "index_sync_hosts_on_host_id"
+
+  create_table "sync_queues", :force => true do |t|
+    t.string   "status",     :limit => 8,  :null => false
+    t.string   "query_id",   :limit => 32, :null => false
+    t.string   "cmd",        :limit => 16, :null => false
+    t.text     "data",                     :null => false
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
+  end
+
+  add_index "sync_queues", ["query_id"], :name => "index_sync_queues_on_query_id"
+  add_index "sync_queues", ["status", "created_at"], :name => "index_sync_queues_on_status_and_created_at"
 
   create_table "trust_net_members", :force => true do |t|
     t.string   "idhash",     :limit => 64,  :null => false
