@@ -6,7 +6,9 @@ class SynchronizeController < ApplicationController
     if host.present? && host.active? && request.headers["X-Checksum"] == SyncDataService.gen_checksum(host.secret, json_text)
       begin
         json = JSON.parse(json_text)
-        SyncQueue.create(:status => 'new', :query_id => json['query_id'], :cmd => json['cmd'], :data => json['data'].to_json)
+        if !SyncQueue.find_by_query_id(json['query_id'])
+          SyncQueue.create(:status => 'new', :query_id => json['query_id'], :cmd => json['cmd'], :data => json['data'].to_json)
+        end
       rescue JSON::ParserError
         render text: "Error: json parse error" and return
       end

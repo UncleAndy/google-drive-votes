@@ -148,10 +148,6 @@ class GoogleUserDoc
     user_verify_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.verify_votes)
     user_verify_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.verify_votes, 1000, 3) if !user_verify_votes
 
-    # Страница голосов в голосованиях (vote_doc_url_key, user_vote_doc_url_key)
-    user_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.votes)
-    user_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.votes, 30000, 3) if !user_votes
-
     # Страница голосов доверия
     user_trust_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.trust_votes)
     user_trust_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.trust_votes, 1000, 2) if !user_trust_votes
@@ -159,6 +155,10 @@ class GoogleUserDoc
     # Страница заверяемых свойств (idhash, id_property, level)
     user_property_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.property_votes)
     user_property_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.property_votes, 1000, 3) if !user_property_votes
+
+    # Страница регистрируемых действий пользователя (time, type, id, data)
+    user_votes = user_doc.worksheet_by_title(Settings.google.user.main_doc_pages.actions)
+    user_votes = user_doc.add_worksheet(Settings.google.user.main_doc_pages.actions, 50000, 4) if !user_votes
   end
 
   def user_doc
