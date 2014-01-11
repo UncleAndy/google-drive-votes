@@ -42,7 +42,7 @@ GoogleDriveVotes::Application.routes.draw do
     end
   end
 
-  resource :synchronize, :only => [:create]
+  resource :synchronize, :only => [:create], :controller => :synchronize
 
   match '/master', :to => 'master#index'
   

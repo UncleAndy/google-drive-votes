@@ -8,6 +8,7 @@ group :assets do
   gem 'coffee-rails', '~> 3.2.1'
   gem 'uglifier', '>= 1.0.3'
 end
+
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'gon', '3.0.5'
@@ -19,6 +20,8 @@ gem 'simple_form'
 gem 'rails_config'
 gem 'google_drive'
 gem 'resque-scheduler', :require => 'resque_scheduler'
+gem 'base58'
+
 group :development do
   gem 'capistrano', '2.9.0'
   gem 'html2haml'

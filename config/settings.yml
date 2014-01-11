@@ -28,3 +28,4 @@ redis_for_resque:
   db: 1
 
 host_id: "bb2e763e626f11e3ba7708606e187adb"
+server_url: "http://trustnet.gplvote.org/"
