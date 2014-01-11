@@ -11,3 +11,10 @@ process_sync_data:
   queue: process_sync_data
   args:
   description: Периодическая отправка на другие сервера синхронизирующих данных
+
+sync_self_server:
+  cron: '0 0 * * * *'
+  class: 'Jobs::SyncSelfServer'
+  queue: sync_self_server
+  args:
+  description: Периодическая отправка на другие сервера анонса о себе

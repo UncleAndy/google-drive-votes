@@ -1,5 +1,7 @@
 GoogleDriveVotes::Application.routes.draw do
 
+  mount Resque::Server, :at => "/resque"
+  
   resource :auth, :controller => 'auth', :only => [:show] do
     member do
       get :login
