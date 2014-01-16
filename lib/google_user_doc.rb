@@ -170,6 +170,7 @@ class GoogleUserDoc
       idx = 0
       # Проверяем все документы в коллекции пока не найдем тот, который может исправлять текущий пользователь
       # или пока не переберем все документы
+      test_page = nil
       begin
         @user_doc = collection.spreadsheets(:title => Settings.google.user.main_doc)[idx]
         break if !@user_doc
@@ -190,6 +191,10 @@ class GoogleUserDoc
 
         idx += 1
       end while @user_doc && test_page["A#{row_num}"] != test_val
+      if test_page.present?
+        test_page["A#{row_num}"] = ''
+        test_page.save
+      end
     end
 
     @user_doc
