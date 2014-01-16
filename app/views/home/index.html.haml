@@ -7,7 +7,7 @@
             - if session[:auth_token].present? && session[:refresh_token].present?
               %button.btn.btn-primary.btn-lg.wide= I18n.t("titles.authorization")
             - else
-              %button.btn.btn-warning.btn-lg= I18n.t("titles.authorization")
+              %button.btn.btn-warning.btn-lg.wide= I18n.t("titles.authorization")
         %td.center{:width => '33%'}
           = link_to user_path do
             %button.btn.btn-primary.btn-lg.wide= I18n.t("titles.user_cabinet")

@@ -95,7 +95,7 @@ class VerifyVotesController < ApplicationController
     if check_data(true)
       @target_idhash, @target_doc_key = UserVerifyVote.parse_complex_id(params[:id])
 
-      @vote = UserVerifyVote.find_by_idhash_and_vote_idhash_and_vote_doc_key(@idhash, @target_idhash, @target_doc_key)
+      @vote = UserVerifyVote.find_by_idhash_and_doc_key_and_vote_idhash_and_vote_doc_key(@idhash, @doc_key, @target_idhash, @target_doc_key)
       @vote.update_attributes(params[:vote]) if @vote
 
       return false if !google_action do
