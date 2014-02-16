@@ -9,9 +9,6 @@ class SyncQueue < ActiveRecord::Base
   # 'out' - для передачи наружу
   # 'new' - для локальной обработки, а затем для передачи наружу
   # 'done' - обработанные записи
-
-  # Команды:
-  # 'NEW_MEMBER' - новый участник
   
   before_save do
     self.query_id ||= Guid.new.hexdigest

@@ -1,24 +1,20 @@
 class SyncDataService
+  SYNC_TASKS = {
+    'NEW_MEMBER'    => SyncTasks::NewMember,
+    'SERVERS'       => SyncTasks::Servers,
+    'VERIFY_VOTE'   => SyncTasks::VerifyVote,
+    'TRUST_VOTE'    => SyncTasks::TrustVote,
+    'PROPERTY_VOTE' => SyncTasks::PropertyVote
+  }
+  
   def self.process_input
     SyncQueue.for_input.each do |sync|
-      if sync.cmd == 'NEW_MEMBER'
-        result = 'out'
-        begin
-          sync_new_member(JSON.parse(sync.data))
-        rescue JSON::ParserError
-          result = 'error'
-        ensure
-          sync.update_attributes(:status => result)
-        end
-      elsif sync.cmd == 'SERVERS'
-        result = 'out'
-        begin
-          sync_new_servers(JSON.parse(sync.data))
-        rescue JSON::ParserError
-          result = 'error'
-        ensure
-          sync.update_attributes(:status => result)
-        end
+      task = SYNC_TASKS[sync.cmd]
+      if task.present?
+        result = task.receive(sync.data)
+        sync.update_attributes(:status => result)
+      else
+        sync.update_attributes(:status => 'no task')
       end
     end
   end
@@ -56,25 +52,5 @@ class SyncDataService
   def self.gen_checksum(secret, data_str)
     check_string = "#{secret}:#{data_str}"
     Digest::SHA256.hexdigest(check_string)
-  end
-  
-  private
-
-  def sync_new_member(data)
-    member = TrustNetMember.find_by_idhash_and_doc_key(data['idhash'], data['doc_key'])
-    if member
-      member.update_attributes(:nick => data['nick'])
-    else
-      TrustNetMember.create(:idhash => data['idhash'], :doc_key => data['doc_key'], :nick => data['nick'])
-    end
-  end
-
-  def sync_new_servers(data)
-    if data.servers.present?
-      data.servers.each do |server|
-        srv = Server.find_by_url(server)
-        Server.create(:url => server) if srv.blank?
-      end
-    end
   end
 end
